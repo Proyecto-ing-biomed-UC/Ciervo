@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 import pandas as pd
 
 
-def emg(df: pd.DataFrame) -> None:
+def emg_plot(df: pd.DataFrame) -> None:
     # df es un dataframe con las columnas Elapsed Time,Isquio,Cuadriceps,GLMedio,AductorLargo,Angle
     # Se grafican las columnas Isquio,Cuadriceps,GLMedio,AductorLargo,Angle
 

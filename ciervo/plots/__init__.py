@@ -1,1 +1,1 @@
-from .emg import emg
+from .emg import emg_plot
