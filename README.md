@@ -9,7 +9,7 @@ El proposito de este reposito es entregar los codigos necesarios para realizar e
 - [] Implementar sistema para clasificar inicio y fin de marcha
 - [] Implementar sistema de procesamiento de datos en tiempo real
     - [] Setear simulador de envio de datos
-    - [] Coordinar control, raspberry o arduino ?
+    - [] Testear nanomq en raspberry
 
 
 # Notas
