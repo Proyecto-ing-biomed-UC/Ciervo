@@ -15,3 +15,5 @@ def emg_plot(df: pd.DataFrame) -> None:
         axs[i].set_title(col)
 
     plt.show()
+
+    
