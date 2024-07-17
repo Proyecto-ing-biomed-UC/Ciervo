@@ -16,4 +16,5 @@ def emg_plot(df: pd.DataFrame) -> None:
 
     plt.show()
 
+
     
