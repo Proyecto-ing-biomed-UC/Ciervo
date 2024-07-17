@@ -1,8 +1,32 @@
+aux:
+- changed-files:
+  - any-glob-to-any-file: "ciervo/aux_tools/**"
 
 io:
 - changed-files:
   - any-glob-to-any-file: "ciervo/io/**"
 
+models:
+- changed-files:
+  - any-glob-to-any-file: "ciervo/models/**"
+
 plots:
 - changed-files:
   - any-glob-to-any-file: "ciervo/plots/**"
+
+simulations:
+- changed-files:
+  - any-glob-to-any-file: "ciervo/simulations/**"
+
+
+docker:
+- changed-files:
+  - any-glob-to-any-file: "docker/**"
+
+examples:
+- changed-files:
+  - any-glob-to-any-file: "examples/**"
+
+tests:
+- changed-files:
+  - any-glob-to-any-file: "tests/**"
