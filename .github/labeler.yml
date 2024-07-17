@@ -1,7 +1,3 @@
-Ciervo:
-- changed-files:
-  - any-glob-to-any-file: "ciervo/**"
-
 
 io:
 - changed-files:
