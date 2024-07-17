@@ -1,49 +1,34 @@
 Ciervo:
 - changed-files:
-    - "ciervo/**"
-  labels:
-    - "ciervo"
+  - any-glob-to-any-file: ["ciervo/**"]
 
 
 models:
 - changed-files:
-    - "ciervo/models/**"
-  labels:
-    - "models"
+  - any-glob-to-any-file: ["ciervo/models/**"]
 
 
 simulation:
 - changed-files:
-    - "ciervo/simulation/**"
-  labels:
-    - "simulation"
+  - any-glob-to-any-file: ["ciervo/simulation/**"]
+
 
 aux:
 - changed-files:
-    - "ciervo/aux_tools/**"
-  labels:
-    - "aux"
+  - any-glob-to-any-file: ["ciervo/aux/**"]
 
 io:
 - changed-files:
-    - "ciervo/io/**"
-  labels:
-    - "io"
+  - any-glob-to-any-file: ["ciervo/io/**"]
 
 plots:
 - changed-files:
-    - "ciervo/plots/**"
-  labels:
-    - "plots"
+  - any-glob-to-any-file: ["ciervo/plots/**"]
 
 tests:
 - changed-files:
-    - "tests/**"
-  labels:
-    - "tests"
+  - any-glob-to-any-file: ["tests/**"]
 
 examples:
 - changed-files:
-    - "examples/**"
-  labels:
-    - "examples"
+  - any-glob-to-any-file: ["examples/**"]
