@@ -42,7 +42,7 @@ jobs:
       id: version
       with:
         scheme: calver
-        increment: release
+        increment: patch
     
     - name: version
       run: echo "VERSION=$(echo ${{ steps.version.outputs.version }})" >> $GITHUB_ENV
