@@ -35,9 +35,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install build
+    #- name: version
+    #  run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's/refs\/tags\/v//p')" >> $GITHUB_ENV
+
+    - name: Generate release tag
+        id: generate_release_tag
+        uses: amitsingh-007/next-release-tag@v6.0.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: 'v'
+          tag_template: 'yyyy.mm.dd.i'
+
     - name: version
-    # dont use set-env, it is deprecated
-      run: echo "VERSION=$(echo $GITHUB_REF | sed -n 's/refs\/tags\/v//p')" >> $GITHUB_ENV
+      run: echo "VERSION=$(echo ${{ steps.generate_release_tag.outputs.release_tag }})" >> $GITHUB_ENV
+
 
     - name: Build package
       run: python -m build
