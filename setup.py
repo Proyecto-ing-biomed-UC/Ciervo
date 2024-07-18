@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
+import os
 
-VERSION = '0.1.15' 
+
+VERSION = os.getenv('VERSION')
 DESCRIPTION = 'Ciervo for prosthetic leg control'
 LONG_DESCRIPTION = 'First version'
 
