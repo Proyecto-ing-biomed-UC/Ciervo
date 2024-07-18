@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.13' 
+VERSION = '0.1.14' 
 DESCRIPTION = 'Ciervo for prosthetic leg control'
 LONG_DESCRIPTION = 'First version'
 
@@ -21,7 +21,6 @@ setup(
         classifiers= [
             "Development Status :: 3 - Alpha",
             "Intended Audience :: Education",
-            "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 3",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: Microsoft :: Windows",
