@@ -43,8 +43,12 @@ jobs:
       with:
         scheme: calver
         increment: patch
-      
 
+    - name: push tag
+      run: git tag ${{ steps.version.outputs.version }}
+    - name: push tag
+      run: git push --tags
+      
     - name: version
       run: echo "VERSION=$(echo ${{ steps.version.outputs.version }})" >> $GITHUB_ENV
 
