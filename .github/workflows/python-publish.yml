@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   deploy:
-
+    permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
@@ -62,6 +62,7 @@ jobs:
         body: ${{ steps.version.outputs.version }}
 
 
+    
     
 
 
