@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.1.14' 
+VERSION = '0.1.15' 
 DESCRIPTION = 'Ciervo for prosthetic leg control'
 LONG_DESCRIPTION = 'First version'
 
@@ -24,6 +24,8 @@ setup(
             "Programming Language :: Python :: 3",
             "Operating System :: MacOS :: MacOS X",
             "Operating System :: Microsoft :: Windows",
+            # Linux
+            "Operating System :: POSIX :: Linux",
         ],
         package_data={'ciervo': ['tests/data/marcha/*.csv']},
         include_package_data=True,
