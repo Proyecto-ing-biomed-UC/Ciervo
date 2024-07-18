@@ -50,8 +50,7 @@ jobs:
 
     - name: version
       run: echo "VERSION=$(echo ${{ steps.generate_release_tag.outputs.release_tag }})" >> $GITHUB_ENV
-
-
+      
     - name: Build package
       run: python -m build
     - name: Publish package
