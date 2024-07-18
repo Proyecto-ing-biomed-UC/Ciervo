@@ -15,6 +15,8 @@ Para instalar el paquete se debe ejecutar el siguiente comando:
 pip install ciervo --upgrade
 ```
 
+Los requerimientos necesarios para la instalación del paquete se encuentran en el archivo `requirements.txt`. Porfavor, solo utilizar Pytorch > 2.0.0. para deep learning. 
+
 
 # Literatura
 Literatura relevante para el desarrollo del proyecto.
