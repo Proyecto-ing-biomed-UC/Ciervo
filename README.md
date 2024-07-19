@@ -18,6 +18,24 @@ pip install ciervo --upgrade
 Los requerimientos necesarios para la instalación del paquete se encuentran en el archivo `requirements.txt`. Porfavor, solo utilizar Pytorch > 2.0.0. para deep learning. 
 
 
+# Datos de prueba
+Los datos de prueba se encuentran dentro de la función `load_marcha` del paquete ciervo. Para cargar los datos se debe ejecutar el siguiente comando:
+```python
+from ciervo.io import example_marcha
+data = example_marcha()
+```
+
+data es un dataframe de pandas con las siguientes columnas: 
+* `Elapsed Time`: Tiempo en segundos
+* `Isquio`: Señal EMG del musculo isquiotibial
+* `Cuadriceps`: Señal EMG del musculo cuadriceps
+* `GLMedio`: Señal EMG del musculo gluteo medio
+* `AductorLargo`: Señal EMG del musculo aductor largo
+* `Angle`: Angulo de la rodilla en grados
+
+Las señales se encuentran sampleadas a 250 Hz. 
+
+
 # Literatura
 Literatura relevante para el desarrollo del proyecto.
 
