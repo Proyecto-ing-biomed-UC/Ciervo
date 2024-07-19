@@ -49,10 +49,15 @@ Literatura relevante para el desarrollo del proyecto.
 
 
 # Races [link](https://cybathlon.ethz.ch/documents/downloads/CYBATHLON%202024/2400318_LEG_EN.pdf)
+<details>
+<summary> details </summary>
+
+
 ![](assets/race/race1.png)
 ![](assets/race/race2.png)
 
 
+</details>
 
 
 
