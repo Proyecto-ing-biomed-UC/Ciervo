@@ -19,7 +19,9 @@ Los requerimientos necesarios para la instalación del paquete se encuentran en 
 
 
 # Datos de prueba
-Los datos de prueba se encuentran dentro de la función `load_marcha` del paquete ciervo. Para cargar los datos se debe ejecutar el siguiente comando:
+Los datos de prueba se encuentran dentro de la función `load_marcha` del paquete ciervo. Cada uno de los archivos, corresponde a datos de marcha de un solo indivudio. 
+
+Para cargar los datos se debe ejecutar el siguiente comando:
 ```python
 from ciervo.io import example_marcha
 data = example_marcha()
@@ -33,7 +35,7 @@ data es un dataframe de pandas con las siguientes columnas:
 * `AductorLargo`: Señal EMG del musculo aductor largo
 * `Angle`: Angulo de la rodilla en grados
 
-Las señales se encuentran sampleadas a 250 Hz. 
+Las señales se encuentran sampleadas a 250 Hz.
 
 
 # Literatura
