@@ -1,23 +1,41 @@
-import argparse
-import logging
-
+# python 3.11
+import os; os.system('clear')
+import random
+from paho.mqtt import client as mqtt_client
+import numpy as np
+import time
 import pyqtgraph as pg
-from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 from brainflow.data_filter import DataFilter, DetrendOperations
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
+import ciervo.parameters as p
+
+
+broker = p.BROKER_HOST
+port = 1883
+topic = "data"
+client_id = f'subscribe-{random.randint(0, 100)}'
+
+
+
 
 class Graph:
-    def __init__(self, board_shim):
-        self.board_id = board_shim.get_board_id()
-        self.board_shim = board_shim
-        self.exg_channels = BoardShim.get_exg_channels(self.board_id)
-        print(BoardShim.get_device_name(self.board_id))
-        self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
-        print(f'Sampling rate: {self.sampling_rate}')
+    def __init__(self):
         self.update_speed_ms = 50
-        self.window_size = 4
-        self.num_points = self.window_size * self.sampling_rate
+        self.window_size = 20
+        self.num_points = self.window_size * 250
+
+        # MQTT
+        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, 'plotter')
+        self.client.on_connect = on_connect
+        self.client.on_message = self.on_message
+        self.client.connect(broker, port)
+        self.client.subscribe(topic)
+        self.client.loop_start()
+
+        # Buffer
+        self.buffer = Buffer(self.window_size)
+
 
         self.app = QtGui.QApplication([])
         self.win = pg.GraphicsWindow(title='BrainFlow Plot', size=(800, 600))
@@ -33,11 +51,14 @@ class Graph:
     def _init_timeseries(self):
         self.plots = list()
         self.curves = list()
-        for i in range(len(self.exg_channels)):
+        for i in range(8):
             p = self.win.addPlot(row=i, col=0)
             p.showAxis('left', False)
             p.setMenuEnabled('left', False)
-            p.showAxis('bottom', False)
+            if i == 7:
+                p.showAxis('bottom', True)
+            else:
+                p.showAxis('bottom', False)
             p.setMenuEnabled('bottom', False)
             p.setLabel('left', f'EMG {i+1}')
             if i == 0:
@@ -46,70 +67,51 @@ class Graph:
             curve = p.plot()
             self.curves.append(curve)
 
+    def on_message(self, client, userdata, msg):
+        data = np.frombuffer(msg.payload, dtype=p.PRECISION)
+        data = data.reshape(6, -1)
+        self.buffer.data = data
 
     def update(self):
-        data = self.board_shim.get_current_board_data(self.num_points)
-        #data = self.board_shim.get_board_data(self.num_points)
-        for count, channel in enumerate([17, 18, 19]):
-            # plot timeseries
-            DataFilter.detrend(data[channel], DetrendOperations.CONSTANT.value)
+        data = self.buffer.data
+        for count, channel in enumerate(range(6)):
             self.curves[count].setData(data[channel].tolist())
 
+        self.prev_time = data
         self.app.processEvents()
 
 
-def main():
-    BoardShim.enable_dev_board_logger()
-    logging.basicConfig(level=logging.DEBUG)
+# The callback function of connection
+def on_connect(client, userdata, flags, rc):
+    print(f"Connected with result code {rc}")
+    client.subscribe('data')
 
-    parser = argparse.ArgumentParser()
-    # use docs to check which parameters are required for specific board, e.g. for Cyton - set serial port
-    parser.add_argument('--timeout', type=int, help='timeout for device discovery or connection', required=False,
-                        default=0)
-    parser.add_argument('--ip-port', type=int, help='port', required=False, default=6677)
-    parser.add_argument('--ip-protocol', type=int, help='ip protocol, check IpProtocolType enum', required=False,
-                        default=0)
-    parser.add_argument('--ip-address', type=str, help='ip address', required=False, default='225.1.1.1')
-    parser.add_argument('--serial-port', type=str, help='serial port', required=False, default='')
-    parser.add_argument('--mac-address', type=str, help='mac address', required=False, default='')
-    parser.add_argument('--other-info', type=str, help='other info', required=False, default='')
-    parser.add_argument('--streamer-params', type=str, help='streamer params', required=False, default='')
-    parser.add_argument('--serial-number', type=str, help='serial number', required=False, default='')
-    parser.add_argument('--board-id', type=int, help='board id, check docs to get a list of supported boards',
-                        required=False, default=BoardIds.SYNTHETIC_BOARD)
-    parser.add_argument('--file', type=str, help='file', required=False, default='')
-    parser.add_argument('--master-board', type=int, help='master board id for streaming and playback boards',
-                        required=False, default=BoardIds.SYNTHETIC_BOARD)
-    args = parser.parse_args()
 
-    params = BrainFlowInputParams()
-    params.ip_port = args.ip_port
-    params.serial_port = args.serial_port
-    params.mac_address = args.mac_address
-    params.other_info = args.other_info
-    params.serial_number = args.serial_number
-    params.ip_address = args.ip_address
-    params.ip_protocol = args.ip_protocol
-    params.timeout = args.timeout
-    params.file = args.file
-    params.master_board = args.master_board
+class Buffer:
+    def __init__(self, duration):
+        self.window = duration * p.SAMPLE_RATE
+        self._data = np.zeros((p.NUM_CHANNELS, self.window ), dtype=p.PRECISION)
+        self.idx = 0
 
-    board_shim = BoardShim(args.board_id, params)
-    print(board_shim)
-    try:
-        board_shim.prepare_session()
-        board_shim.start_stream(250*10)
-        
-        Graph(board_shim)
-    except BaseException:
-        logging.warning('Exception', exc_info=True)
-    finally:
-        logging.info('End')
-        if board_shim.is_prepared():
-            logging.info('Releasing session')
-            board_shim.release_session()
+    @property
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        self._data = np.concatenate((self._data, data), axis=1)[:, -self.window:]
+
+
+
+
+
 
 
 if __name__ == '__main__':
-    main() 
+    Graph()
+    bu  = Buffer(4)
+
+    print(bu.data.shape)
+    bu.data = np.random.randn(p.NUM_CHANNELS, 10)
+    print(bu.data.shape)
 
