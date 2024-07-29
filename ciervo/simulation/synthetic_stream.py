@@ -4,7 +4,6 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import time
 from paho.mqtt import client as mqtt_client
 import ciervo.parameters as p
-import numpy as np
 
 class Publish:
     def __init__(self, board_shim):
@@ -20,7 +19,7 @@ class Publish:
         self.broker = p.BROKER_HOST
         self.port = p.BROKER_PORT
         self.topic = 'data'
-        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, 'openbci')
+        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'openbci')
         self.client.on_connect = on_connect
         self.client.connect(self.broker, self.port)
         self.client.loop_start()
@@ -46,7 +45,7 @@ class Publish:
 
             self.client.publish(self.topic, data_bytes, qos=0)
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties):
     print(f"Connected with result code {rc}")
 
 

@@ -1,9 +1,0 @@
-plotly==5.22.0
-pandas==2.2.2
-pytz==2024.1
-six==1.16.0
-numpy==1.26.4
-scipy
-scikit-learn
-seaborn
-tqdm

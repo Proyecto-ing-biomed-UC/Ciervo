@@ -1,32 +1,28 @@
-# python 3.11
 import os; os.system('clear')
-import random
 from paho.mqtt import client as mqtt_client
 import numpy as np
-import time
 import pyqtgraph as pg
-from brainflow.data_filter import DataFilter, DetrendOperations
 from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import ciervo.parameters as p
+from ciervo.aux_tools import Buffer
+import argparse
 
 
 broker = p.BROKER_HOST
 port = 1883
 topic = "data"
-client_id = f'subscribe-{random.randint(0, 100)}'
-
 
 
 
 class Graph:
-    def __init__(self):
+    def __init__(self, window=5):
         self.update_speed_ms = 50
-        self.window_size = 20
-        self.num_points = self.window_size * 250
+        self.window = window
+        self.num_points = self.window * 250
 
         # MQTT
-        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION1, 'plotter')
+        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'plotter')
         self.client.on_connect = on_connect
         self.client.on_message = self.on_message
         self.client.connect(broker, port)
@@ -34,7 +30,7 @@ class Graph:
         self.client.loop_start()
 
         # Buffer
-        self.buffer = Buffer(self.window_size)
+        self.buffer = Buffer(self.window, roll=True)
 
 
         self.app = QtGui.QApplication([])
@@ -82,36 +78,15 @@ class Graph:
 
 
 # The callback function of connection
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties):
     print(f"Connected with result code {rc}")
     client.subscribe('data')
 
 
-class Buffer:
-    def __init__(self, duration):
-        self.window = duration * p.SAMPLE_RATE
-        self._data = np.zeros((p.NUM_CHANNELS, self.window ), dtype=p.PRECISION)
-        self.idx = 0
-
-    @property
-    def data(self):
-        return self._data
-
-    @data.setter
-    def data(self, data):
-        self._data = np.concatenate((self._data, data), axis=1)[:, -self.window:]
-
-
-
-
-
-
-
 if __name__ == '__main__':
-    Graph()
-    bu  = Buffer(4)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--window', type=int, help='duration of the recording', required=False, default=5)
+    
+    args = parser.parse_args()
 
-    print(bu.data.shape)
-    bu.data = np.random.randn(p.NUM_CHANNELS, 10)
-    print(bu.data.shape)
-
+    Graph(window=args.window)

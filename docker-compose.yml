@@ -13,3 +13,13 @@ services:
       - NANOMQ_NUM_TASKQ_THREAD=4
       - NANOMQ_NUM_WORKER_THREAD=4
 
+  stream:
+    image: cgvalle/ciervo_stream:latest
+    restart: always
+    pull_policy: always
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.stream
+    depends_on:
+    - nanomq
+
