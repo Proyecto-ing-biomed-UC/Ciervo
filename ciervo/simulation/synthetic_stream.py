@@ -2,6 +2,52 @@ import argparse
 import logging
 from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import time
+from paho.mqtt import client as mqtt_client
+import ciervo.parameters as p
+
+class Publish:
+    def __init__(self, board_shim):
+        self.board_id = board_shim.get_board_id()
+        self.board_shim = board_shim
+        self.exg_channels = BoardShim.get_exg_channels(self.board_id)
+        self.sampling_rate = BoardShim.get_sampling_rate(self.board_id)
+        self.update_speed_ms = 50
+        self.window_size = 4
+        self.num_points = self.window_size * self.sampling_rate
+
+        # MQTT
+        self.broker = p.BROKER_HOST
+        self.port = p.BROKER_PORT
+        self.topic = 'data'
+        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'openbci')
+        self.client.on_connect = on_connect
+        self.client.connect(self.broker, self.port)
+        self.client.loop_start()
+
+        self.update()
+        self.client.loop_stop()
+
+
+    def update(self):
+        #data = self.board_shim.get_current_board_data(self.num_points)  
+        data = self.board_shim.get_board_data(self.num_points)
+        start_time  = data[30, 0]
+        while True:
+            time.sleep(2/self.sampling_rate)  # Esperar al menos 2 muestras
+            #data = self.board_shim.get_current_board_data(self.num_points)  # np.float64 default
+            data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
+            data[30 ,:] -=  start_time
+            data = data[p.CHANNELS, :]
+            data = data.astype(p.PRECISION)
+            data_bytes = data.tobytes()
+
+            # Quiza aqui agregar el pre-procesamiento
+
+            self.client.publish(self.topic, data_bytes, qos=0)
+
+def on_connect(client, userdata, flags, rc, properties):
+    print(f"Connected with result code {rc}")
+
 
 
 
@@ -51,8 +97,7 @@ def main():
         board_shim.prepare_session()
         board_shim.add_streamer(args.streamer_params)
         board_shim.start_stream(250*10)
-        time.sleep(5)
-        #Graph(board_shim)
+        Publish(board_shim)
     except BaseException:
         logging.warning('Exception', exc_info=True)
     finally:
@@ -66,5 +111,7 @@ if __name__ == '__main__':
     from pprint import pprint
     board_id = BoardIds.SYNTHETIC_BOARD.value
     pprint(BoardShim.get_board_descr(board_id))
+
+
     main() 
 
