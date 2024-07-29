@@ -1,0 +1,8 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+
+recordings/*.npy
+ciervo/tests/*
+.git/*
