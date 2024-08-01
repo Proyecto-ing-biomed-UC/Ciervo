@@ -22,7 +22,7 @@ def load_csv(file_path):
 
 
 def example_marcha():
-    path = importlib.util.find_spec("marcha").submodule_search_locations[0] + "/tests/data/marcha"
+    path = importlib.util.find_spec("ciervo").submodule_search_locations[0] + "/tests/data/marcha"
     files = os.listdir(path)
     files = [f for f in files if f.endswith(".csv")]
     files.sort()
@@ -30,7 +30,7 @@ def example_marcha():
 
 
 def example_marcha_larga():
-    path = importlib.util.find_spec("marcha_larga").submodule_search_locations[0] + "/tests/data/marcha_larga"
+    path = importlib.util.find_spec("ciervo").submodule_search_locations[0] + "/tests/data/marcha_larga"
     files = os.listdir(path)
     files = [f for f in files if f.endswith(".csv")]
     files.sort()
