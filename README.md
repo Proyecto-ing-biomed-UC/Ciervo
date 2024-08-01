@@ -19,15 +19,18 @@ Los requerimientos necesarios para la instalación del paquete se encuentran en 
 
 
 # Datos de prueba
-Los datos de prueba se encuentran dentro de la función `load_marcha` del paquete ciervo. Cada uno de los archivos, corresponde a datos de marcha de un solo indivudio. 
+Los datos de prueba se encuentran dentro de la función `example_marcha` y `example_marcha_larga` del paquete ciervo. 
 
-Para cargar los datos se debe ejecutar el siguiente comando:
+
+
+### `example_marcha` 
+Contiene 17 archivos de caminata, para un total de **6.3 Minutos**. Para cargar los datos se debe ejecutar el siguiente comando:
 ```python
 from ciervo.io import example_marcha
 data = example_marcha()
 ```
 
-data es un dataframe de pandas con las siguientes columnas: 
+data es un una lista que contiene dataframes con las siguientes columnas: 
 * `Elapsed Time`: Tiempo en segundos
 * `Isquio`: Señal EMG del musculo isquiotibial
 * `Cuadriceps`: Señal EMG del musculo cuadriceps
@@ -35,7 +38,33 @@ data es un dataframe de pandas con las siguientes columnas:
 * `AductorLargo`: Señal EMG del musculo aductor largo
 * `Angle`: Angulo de la rodilla en grados
 
-Las señales se encuentran sampleadas a 250 Hz.
+
+### `example_marcha_larga`
+Contiene 3 archivos de caminata, para un total de **40.4 minutos**. Para cargar los datos se debe ejecutar el siguiente comando:
+```python
+from ciervo.io import example_marcha_larga
+data = example_marcha_larga()
+```
+
+data es un una lista que contiene dataframes con las siguientes columnas:
+* `Elapsed Time`: Tiempo en segundos
+* `Isquio`: Señal EMG del musculo isquiotibial
+* `Cuadriceps`: Señal EMG del musculo cuadriceps
+* `AductorLargo`: Señal EMG del musculo aductor largo
+* `Angle`: Angulo de la rodilla en grados
+* `Accel X`: Aceleración en el eje X
+* `Accel Y`: Aceleración en el eje Y
+* `Accel Z`: Aceleración en el eje Z
+* `Gyro X`: Velocidad angular en el eje X
+* `Gyro Y`: Velocidad angular en el eje Y
+* `Gyro Z`: Velocidad angular en el eje Z
+
+A diferencia de `example_marcha`, `example_marcha_larga` contiene señales de aceleración y velocidad angular. El sensor se ubico en el costado de la pierna derecha, cerca del bolsillo del pantalón. `GLMedio` no se encuentra en los datos de `example_marcha_larga`.
+
+
+Todas señales se encuentran sampleadas a 250 Hz.
+
+
 
 
 # Literatura
