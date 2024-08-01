@@ -29,7 +29,7 @@ setup(
             # Linux
             "Operating System :: POSIX :: Linux",
         ],
-        package_data={'ciervo': ['tests/data/marcha/*.csv', 'ciervo/tests/data/marcha_larga/*.csv']},
+        package_data={'ciervo': ['tests/data/marcha/*.csv', 'tests/data/marcha_larga/*.csv']},
         include_package_data=True,
 
 
