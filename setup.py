@@ -30,8 +30,8 @@ setup(
             "Operating System :: POSIX :: Linux",
         ],
         package_data=
-            {'marcha': ['tests/data/marcha/*.csv'],
-             'marcha_larga': ['tests/data/marcha_larga/*.csv']
+            {'marcha.tests.data.marcha': ['*.csv'],
+             'marcha.tests.data.marcha_larga': ['*.csv']
             },
         include_package_data=True,
 
