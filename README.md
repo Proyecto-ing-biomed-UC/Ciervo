@@ -66,6 +66,74 @@ Todas señales se encuentran sampleadas a 250 Hz.
 
 
 
+## Filtros Butterworth
+
+Este módulo proporciona filtros Butterworth para el procesamiento de señales: pasa bajo, pasa alto y pasa banda.
+
+### Instalación
+
+Asegúrate de que `scipy` esté instalado:
+
+```bash
+pip install scipy
+```
+
+### Clases de Filtro
+
+Los filtros Butterworth disponibles son:
+
+- **ButterLowpassFilter**: Elimina componentes de alta frecuencia.
+- **ButterHighpassFilter**: Elimina componentes de baja frecuencia.
+- **ButterBandpassFilter**: Permite frecuencias dentro de un rango específico.
+
+#### Argumentos Comunes
+
+Para todos los filtros:
+- `fs` (float, opcional): Frecuencia de muestreo. Predeterminado es 250.
+- `order` (int, opcional): Orden del filtro. Predeterminado es 2.
+
+**Método:**
+- `apply(data)`: Filtra los datos de entrada.
+
+### Ejemplos
+
+#### Filtro de Paso Bajo
+
+```python
+from filters import ButterLowpassFilter
+
+lowpass = ButterLowpassFilter(cutoff=50)
+filtered_data = lowpass.apply(raw_data)
+```
+
+#### Filtro de Paso Alto
+
+```python
+from filters import ButterHighpassFilter
+
+highpass = ButterHighpassFilter(cutoff=1)
+filtered_data = highpass.apply(raw_data)
+```
+
+#### Filtro de Paso Banda
+
+```python
+from filters import ButterBandpassFilter
+
+bandpass = ButterBandpassFilter(lowcut=1, highcut=50)
+filtered_data = bandpass.apply(raw_data)
+```
+
+### Uso
+
+Inicializa un filtro con los parámetros deseados y usa `apply(data)` para filtrar datos.
+```
+
+This version consolidates the filter descriptions under one section and maintains clarity with examples and common argument descriptions. Let me know if there's anything else you'd like to add or modify!
+
+
+
+
 
 # Literatura
 Literatura relevante para el desarrollo del proyecto.
