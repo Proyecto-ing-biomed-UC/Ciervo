@@ -11,8 +11,6 @@ sos = signal.butter(2, 5, 'lowpass', fs=250, output='sos')
 
 def load_csv(file_path):
     # df : Elapsed Time,Isquio,Cuadriceps,GLMedio,AductorLargo,Angle
-
-    
     # Load csv
     df = pd.read_csv(file_path)
     # Set dtypes
