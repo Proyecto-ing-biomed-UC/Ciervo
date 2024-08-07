@@ -1,0 +1,1 @@
+Carpeta destinada a codigos de hardware: teensy, comunicacion serial e interaccion con la raspberry pi.
