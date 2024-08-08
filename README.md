@@ -17,6 +17,10 @@ pip install ciervo --upgrade
 
 Los requerimientos necesarios para la instalación del paquete se encuentran en el archivo `requirements.txt`. Porfavor, solo utilizar Pytorch > 2.0.0. para deep learning. 
 
+# Como usar
+Dirigite a la [Wiki](https://github.com/Proyecto-ing-biomed-UC/Ciervo) del proyecto para ver como usar el paquete. 
+
+
 
 
 
