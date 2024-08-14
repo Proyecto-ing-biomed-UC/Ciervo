@@ -45,15 +45,17 @@ def label_data(data: Union[list, pd.DataFrame], num_fases: int = 10) -> pd.DataF
             # Etiquetado de cada paso en fases
             temp = np.array([-1]* (peaks[i+1] - peaks[i]))
             for phase in range(num_fases):
-                temp[int(len(temp)/num_fases*phase):int(len(temp)/num_fases*(phase+1))] = phase
+                temp[int(len(temp)/num_fases*phase):int(len(temp)/num_fases*(phase+1))] = float(phase)
             labels.extend(temp)
 
         # Etiquetado al final siempre es -1
         labels.extend([-1] * (len(df['Angle']) - len(labels)))   
                     
-        df['labels'] = labels
+        df['labels'] = np.array(labels)
 
-
+    if len(data) == 1:
+        return data[0]
+    
     return data
 
 

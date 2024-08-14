@@ -5,7 +5,7 @@ import pandas as pd
 def emg_plot(df: pd.DataFrame, start: float = 0.0, duration: float = 10) -> None:
     # df es un dataframe con las columnas Elapsed Time,Isquio,Cuadriceps,GLMedio,AductorLargo,Angle
     # Por default solo grafica una ventana de 10 segundos desde el inicio.
-
+    
     df = df[(df["Elapsed Time"] >= start) & (df["Elapsed Time"] <= start + duration)]
 
 
