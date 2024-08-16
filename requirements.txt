@@ -4,3 +4,5 @@ scikit-learn
 seaborn
 tqdm
 paho-mqtt
+influxdb-client
+brainflow
