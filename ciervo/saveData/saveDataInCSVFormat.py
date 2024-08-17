@@ -1,27 +1,22 @@
 import csv
 import numpy as np
 from influxdb_client import InfluxDBClient
-from datetime import datetime
 import ciervo.parameters as p
-import os
+
 # Configuración de la conexión
-token = os.environ.get("INFLUXDB_TOKEN")
-org = "Ciervo"
-bucket = "Ciervo"
 
-
-client = InfluxDBClient(url=p.URL_INFLUXDB, token=token, org=org)
+client = InfluxDBClient(url=p.URL_INFLUXDB, token=p.INFLUXDB_TOKEN, org=p.INFLUXDB_ORG)
 
 # Query con un rango de una hora, se filtra por la medición EMG y se ordena por tiempo
 query = f'''
-from(bucket: "{bucket}")
+from(bucket: "{p.INFLUXDB_BUCKET}")
   |> range(start: -1h)
   |> filter(fn: (r) => r._measurement == "EMG")
   |> pivot(rowKey:["_time"], columnKey: ["_field"], valueColumn: "_value")
   |> sort(columns: ["_time"])
 '''
 
-tables = client.query_api().query(query, org=org)
+tables = client.query_api().query(query, org=p.INFLUXDB_ORG)
 
 # Escribir los datos en un archivo CSV
 with open('output.csv', mode='w', newline='') as file:

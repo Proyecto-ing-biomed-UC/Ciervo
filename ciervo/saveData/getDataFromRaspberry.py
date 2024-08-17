@@ -9,14 +9,6 @@ import os
 token = os.environ.get("DOCKER_INFLUXDB_INIT_ADMIN_TOKEN")  # Token de InfluxDB
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG", "default_org")  # Organización
 bucket = os.environ.get("DOCKER_INFLUXDB_INIT_BUCKET", "default_bucket")  # Bucket
-url = os.environ.get("INFLUXDB_URL", "http://localhost:8086")  # URL de InfluxDB
-
-# Configuración de la conexión a InfluxDB (FUNCIONAL)
-# token = os.environ.get("INFLUXDB_TOKEN")  
-# org = "Ciervo"
-# bucket = "Ciervo"
-# # url = p.URL_INFLUXDB
-
 
 # Cliente de InfluxDB
 client_influx = InfluxDBClient(url=p.URL_INFLUXDB, token=token, org=org)
