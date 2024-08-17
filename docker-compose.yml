@@ -27,7 +27,7 @@ services:
       - influxdb
 
   influxdb:
-    image: arm64v8/influxdb:latest
+    image: influxdb:latest
     container_name: influxdb
     ports:
       - "8086:8086"
@@ -38,6 +38,7 @@ services:
       - DOCKER_INFLUXDB_INIT_ORG=Ciervo
       - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
       - DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
       
     volumes:
       - influxdb-data:/var/lib/influxdb
@@ -46,6 +47,11 @@ services:
       context: .
       dockerfile: docker/Dockerfile.getData
     container_name: data_collector
+    environment:
+      - DOCKER_INFLUXDB_INIT_ORG=Ciervo
+      - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
+      - DOCKER_INFLUXDB_INIT_RETENTION=1w
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
     depends_on:
       - stream
       - influxdb
