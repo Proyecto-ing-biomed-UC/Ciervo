@@ -35,8 +35,6 @@ double Setpoint, Input, Output;
 double Kp=3, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
-float angle_setpoint;
-
 void send_pid_value_to_motor(double);
 
 void move_motor(uint8_t, uint8_t);
@@ -55,63 +53,29 @@ void setup() {
 }
 
 void loop() {
-  if (Serial.available() >= 7) {  // Asegúrate de que hay al menos 7 bytes disponibles (2 bytes de header, 4 bytes de float, 1 byte de footer)
-    // Leer los 2 bytes de header
-    byte header1 = Serial.read();
-    byte header2 = Serial.read();
-    
-    // Verificar el header
-    if (header1 == 0xAA && header2 == 0xBB) {
-      // Leer el float
-      byte floatBytes[4];
-      for (int i = 0; i < 4; i++) {
-        floatBytes[i] = Serial.read();
-      }
-      
-      // Convertir los 4 bytes a un float
-      float valorRecibido;
-      memcpy(&valorRecibido, floatBytes, sizeof(valorRecibido));
-      
-      // Leer el byte de footer
-      byte footer = Serial.read();
-      
-      // Verificar el footer
-      if (footer == 0xCC) {
-        // Si el mensaje es válido, imprimir el valor float
-        //Serial.print("Valor recibido: ");
-        //Serial.println(valorRecibido);
-
-        Setpoint = valorRecibido;
-      } else {
-        Serial.println("Footer incorrecto");
-      }
-    } else {
-      Serial.println("Header incorrecto");
-    }
+  if (digitalRead(ZERO) == 0) {     // check set-zero button
+    myACE.setMpos(0);               // set logical multiturn zero to current position
+    oldPos = 255;                   // force display update
   }
 
-  if (digitalRead(ZERO) == 0) {     // check set-zero button
-          myACE.setMpos(0);               // set logical multiturn zero to current position
-          oldPos = 255;                   // force display update
-        }
+  pinPos = myACE.acePins();          // get IO expander pins - this is for debug
+  rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
+  pos = myACE.pos();                 // get logical position - signed -64 to +63
+  upos = myACE.upos();               // get logical position - unsigned 0 to +127
+  mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
 
-        pinPos = myACE.acePins();          // get IO expander pins - this is for debug
-        rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
-        pos = myACE.pos();                 // get logical position - signed -64 to +63
-        upos = myACE.upos();               // get logical position - unsigned 0 to +127
-        mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
 
-        Input = map(rawPos, 0, 127, 0, 360);
+  Input = map(rawPos, 0, 127, 0, 360);
 
-        myPID.Compute();
-        send_pid_value_to_motor(Output);
-        //Serial.print("PID intput ");
-        //Serial.println(Input);
-        //Serial.print("raw pos ");
-        //Serial.println(rawPos);
-        //Serial.print("PID output ");
-        //Serial.println(Output);
-        //delay(10);
+  myPID.Compute();
+  send_pid_value_to_motor(Output);
+  Serial.print("PID intput ");
+  Serial.println(Input);
+  //Serial.print("raw pos ");
+  //Serial.println(rawPos);
+  //Serial.print("PID output ");
+  //Serial.println(Output);
+  //delay(10);
 }
 
 void send_pid_value_to_motor(double pid_value){
@@ -145,7 +109,7 @@ void setup_motor(void){
 void setup_pid(void){
   //initialize the variables we're linked to
   //Input = 110;
-  //Setpoint = 100;
+  Setpoint = 100;
 
   //turn the PID on
   myPID.SetMode(AUTOMATIC);
