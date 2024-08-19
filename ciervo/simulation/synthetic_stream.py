@@ -18,7 +18,7 @@ class Publish:
         # MQTT
         self.broker = p.BROKER_HOST
         self.port = p.BROKER_PORT
-        self.topic = 'data'
+        self.topic = p.TOPIC
         self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'openbci')
         self.client.on_connect = on_connect
         self.client.connect(self.broker, self.port)
