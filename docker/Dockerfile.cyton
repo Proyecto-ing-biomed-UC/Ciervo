@@ -1,0 +1,35 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install necessary dependencies and clean up to save memory
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    git \
+    build-essential \
+    cmake \
+    libboost-all-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Clone and build brainflow
+RUN git clone https://github.com/brainflow-dev/brainflow.git && \
+    cd brainflow && \
+    mkdir build && \
+    cd build && \
+    cmake .. && \
+    make -j$(nproc) && \
+    make install && \
+    cd ../python_package && \
+    python setup.py install && \
+    cd /app && \
+    rm -rf /brainflow
+
+# Copy the application code
+COPY . /app/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir numpy paho-mqtt
+
+# Run the application
+CMD ["python", "-m", "ciervo.simulation.synthetic_stream"]
