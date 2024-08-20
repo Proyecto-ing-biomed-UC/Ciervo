@@ -47,30 +47,30 @@ class Graph:
     def _init_timeseries(self):
         self.plots = list()
         self.curves = list()
-        for i in range(8):
-            p = self.win.addPlot(row=i, col=0)
-            p.showAxis('left', False)
-            p.setMenuEnabled('left', False)
-            if i == 7:
-                p.showAxis('bottom', True)
+        for i in range(p.NUM_CHANNELS):
+            po = self.win.addPlot(row=i, col=0)
+            po.showAxis('left', False)
+            po.setMenuEnabled('left', False)
+            if i == p.NUM_CHANNELS - 1:
+                po.showAxis('bottom', True)
             else:
-                p.showAxis('bottom', False)
-            p.setMenuEnabled('bottom', False)
-            p.setLabel('left', f'EMG {i+1}')
+                po.showAxis('bottom', False)
+            po.setMenuEnabled('bottom', False)
+            po.setLabel('left', f'EMG {i+1}')
             if i == 0:
-                p.setTitle('TimeSeries Plot')
-            self.plots.append(p)
-            curve = p.plot()
+                po.setTitle('TimeSeries Plot')
+            self.plots.append(po)
+            curve = po.plot()
             self.curves.append(curve)
 
     def on_message(self, client, userdata, msg):
         data = np.frombuffer(msg.payload, dtype=p.PRECISION)
-        data = data.reshape(6, -1)
+        data = data.reshape(p.NUM_CHANNELS, -1)
         self.buffer.data = data
 
     def update(self):
         data = self.buffer.data
-        for count, channel in enumerate(range(6)):
+        for count, channel in enumerate(range(p.NUM_CHANNELS)):
             self.curves[count].setData(data[channel].tolist())
 
         self.prev_time = data
