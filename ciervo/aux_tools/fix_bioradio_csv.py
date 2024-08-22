@@ -75,9 +75,6 @@ def main():
 
     # interpolate nan values
     df = df.interpolate()
-    
-
-    #emg_plot(df, duration=120, start=200)
 
 
 
