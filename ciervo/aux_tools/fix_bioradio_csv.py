@@ -82,15 +82,6 @@ def main():
 
 
 if __name__ == '__main__':
-    #main()
-    df = pd.read_csv('ciervo/tests/data/marcha_larga/marcha_larga_3.csv')
-
-    df1, df2 = np.array_split(df, 2)
-
-    emg_plot(df1, duration=120, start=200)
-    emg_plot(df2, duration=300, start=200)
-
-    # save csv
-    df1.to_csv('marcha_larga_3_1.csv', index=False)
-    df2.to_csv('marcha_larga_3_2.csv', index=False)
+    main()
+    
 
