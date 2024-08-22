@@ -4,6 +4,7 @@ import time
 import threading
 import csv
 import subprocess
+import os
 
 class DataCaptureApp:
     def __init__(self, root):
@@ -48,8 +49,9 @@ class DataCaptureApp:
             self.root.after(1000, self.update_time)
 
     def save_to_csv(self):
+        file_path_program_save = os.path.join(os.path.dirname(__file__), "saveDataInCSVFormat.py")
         
-        subprocess.run(["python3", "ciervo/saveDataInCSVFormat.py"])
+        subprocess.run(["python3", file_path_program_save])
 
         if not self.data:
             messagebox.showwarning("Advertencia", "No hay datos para guardar.")

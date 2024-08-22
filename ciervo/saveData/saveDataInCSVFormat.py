@@ -23,10 +23,10 @@ with open('output.csv', mode='w', newline='') as file:
     writer = csv.writer(file)
     # Escribir encabezados
     writer.writerow([
-        "unixtime_ms", "channel_0", "channel_30", "channel_1", "channel_2", "channel_3", 
-        "channel_4", "channel_20_gyro", "channel_21_gyro", "channel_22_gyro"
+        "unixtime_ms", "channel_1", "channel_2", "channel_3", "channel_4", "channel_5", 
+        "channel_6", "channel_7", "channel_8", "channel_9", "channel_10_gyro", "channel_11_gyro", "channel_12_gyro", "channel_22_time"
     ])
-    # Se deja en un formato en el cual hay 9 columnas (8 canales + timestamp))
+    # Se deja en un formato en el cual hay 13 columnas ( 12 canales + timestamp))
     for table in tables:
         for record in table.records:
             
@@ -36,14 +36,18 @@ with open('output.csv', mode='w', newline='') as file:
             
             row = [
                 unix_time,
-                np.float16(record.values.get("channel_0", np.nan)),
-                np.float16(record.values.get("channel_30", np.nan)),
                 np.float16(record.values.get("channel_1", np.nan)),
                 np.float16(record.values.get("channel_2", np.nan)),
                 np.float16(record.values.get("channel_3", np.nan)),
                 np.float16(record.values.get("channel_4", np.nan)),
-                np.float16(record.values.get("channel_20", np.nan)),  # Giroscopio
-                np.float16(record.values.get("channel_21", np.nan)),  # Giroscopio
-                np.float16(record.values.get("channel_22", np.nan))   # Giroscopio
+                np.float16(record.values.get("channel_5", np.nan)),
+                np.float16(record.values.get("channel_6", np.nan)),
+                np.float16(record.values.get("channel_7", np.nan)),  
+                np.float16(record.values.get("channel_8", np.nan)),  
+                np.float16(record.values.get("channel_9", np.nan)),
+                np.float16(record.values.get("channel_10", np.nan)),  # Giroscopio X
+                np.float16(record.values.get("channel_11", np.nan)),  # Giroscopio Y
+                np.float16(record.values.get("channel_12", np.nan)),   # Giroscopio Z
+                np.float16(record.values.get("channel_22", np.nan))   # Time
             ]
             writer.writerow(row)

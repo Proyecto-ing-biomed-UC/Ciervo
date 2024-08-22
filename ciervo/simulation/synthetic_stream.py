@@ -37,7 +37,7 @@ class Publish:
             #data = self.board_shim.get_current_board_data(self.num_points)  # np.float64 default
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
             data[30 ,:] -=  start_time
-            data = data[p.CHANNELS, :]
+            data = data[p.ALL_CHANNELS, :]
             data = data.astype(p.PRECISION)
             data_bytes = data.tobytes()
 

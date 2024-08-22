@@ -4,7 +4,6 @@ import ciervo.parameters as p
 from influxdb_client import InfluxDBClient, Point, WriteOptions
 import os
 
-
 # Configuración de la conexión a InfluxDB usando variables de entorno (PRUEBAS)
 token = os.environ.get("DOCKER_INFLUXDB_INIT_ADMIN_TOKEN")  # Token de InfluxDB
 org = os.environ.get("DOCKER_INFLUXDB_INIT_ORG", "default_org")  # Organización
@@ -17,19 +16,27 @@ write_api = client_influx.write_api(write_options=WriteOptions(batch_size=1))
 def saveEMG(data):
     data = data.split(',')
     data = [float(x) for x in data]
-    point = (
-        Point("EMG")
-        .field("channel_0", data[0])
-        .field("channel_30", data[1])
-        .field("channel_1", data[2])
-        .field("channel_2", data[3])
-        .field("channel_3", data[4])
-        .field("channel_4", data[5])
-        .field("channel_20", data[6])  # Giroscopio canal 20
-        .field("channel_21", data[7])  # Giroscopio canal 21
-        .field("channel_22", data[8])  # Giroscopio canal 22
-    )
-    write_api.write(bucket=bucket, record=point)
+
+    try:
+        point = (
+            Point("EMG")
+            .field("channel_1", data[0])
+            .field("channel_2", data[1])
+            .field("channel_3", data[2])
+            .field("channel_4", data[3])
+            .field("channel_5", data[4])
+            .field("channel_6", data[5])
+            .field("channel_7", data[6])  
+            .field("channel_8", data[7])  
+            .field("channel_9", data[8])  
+            .field("channel_10", data[9]) # Giroscopio X
+            .field("channel_11", data[10]) # Giroscopio Y
+            .field("channel_12", data[11]) # Giroscopio Z
+            .field("channel_22", data[12]) # Time
+        )
+        write_api.write(bucket=bucket, record=point)
+    except IndexError as e:
+        print(f"Error: {e}. Data received: {data}")
 
 def on_connect(client, userdata, flags, rc):
     print(f"Conectado al broker MQTT con código {rc}")
