@@ -29,17 +29,20 @@ class Publish:
 
 
     def update(self):
-        #data = self.board_shim.get_current_board_data(self.num_points)  
-        data = self.board_shim.get_board_data(self.num_points)
-        start_time  = data[30, 0]
+        start_time = None
         while True:
             time.sleep(2/self.sampling_rate)  # Esperar al menos 2 muestras
-            #data = self.board_shim.get_current_board_data(self.num_points)  # np.float64 default
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
-            data[30 ,:] -=  start_time
-            data = data[p.CHANNELS, :]
+            if data.shape[1] == 0:
+                continue
+
+            if start_time is None:
+                start_time = data[p.TIME_CHANNEL, 0]
+            data[p.TIME_CHANNEL ,:] -=  start_time
+            data = data[p.ALL_CHANNELS, :]
             data = data.astype(p.PRECISION)
             data_bytes = data.tobytes()
+
 
             # Quiza aqui agregar el pre-procesamiento
 
@@ -65,7 +68,7 @@ def main():
     parser.add_argument('--ip-protocol', type=int, help='ip protocol, check IpProtocolType enum', required=False,
                         default=0)
     parser.add_argument('--ip-address', type=str, help='ip address', required=False, default='')
-    parser.add_argument('--serial-port', type=str, help='serial port', required=False, default='/dev/cu.usbserial-DN0094LC')
+    parser.add_argument('--serial-port', type=str, help='serial port', required=False, default='/dev/ttyUSB0')
     parser.add_argument('--mac-address', type=str, help='mac address', required=False, default='')
     parser.add_argument('--other-info', type=str, help='other info', required=False, default='')
     parser.add_argument('--streamer-params', type=str, help='streamer params', required=False, default='streaming_board://225.1.1.1:6677')
@@ -109,7 +112,7 @@ def main():
 
 if __name__ == '__main__':
     from pprint import pprint
-    board_id = BoardIds.SYNTHETIC_BOARD.value
+    board_id = BoardIds.CYTON_BOARD.value
     pprint(BoardShim.get_board_descr(board_id))
 
 
