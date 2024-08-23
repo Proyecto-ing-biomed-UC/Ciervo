@@ -15,6 +15,10 @@ def load_data(path):
     files = os.listdir(path)
     files = [f for f in files if f.endswith(".csv")]
     files.sort()
-    return [load_csv(os.path.join(path, f)) for f in files]
+
+    data = [load_csv(os.path.join(path, f)) for f in files]
+    tiempo_total = sum([len(df)/(250*3600) for df in data])
+    print(f"Total time: {tiempo_total:.2f} hours")
+    return data
 
 
