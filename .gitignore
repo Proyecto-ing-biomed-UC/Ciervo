@@ -1,3 +1,8 @@
+# ignorar csv en la carpeta data
+data/**/*.csv
+
+
+
 # Byte-compiled / optimized / DLL files
 recordings/*.npy
 __pycache__/
@@ -163,4 +168,4 @@ cython_debug/
 #.idea/
 
 # csv
-*.csv
+#*.csv
