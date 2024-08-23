@@ -1,8 +1,6 @@
 import pandas as pd
 import os
-import numpy as np
-import importlib
-from scipy import signal
+
 
 def load_csv(file_path):
     # df : Elapsed Time,Isquio,Cuadriceps,GLMedio,AductorLargo,Angle
