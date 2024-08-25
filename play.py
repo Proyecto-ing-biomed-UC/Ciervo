@@ -20,7 +20,7 @@ from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 # Example: tensor = torch.tensor([1, 2, 3], device=device)
 
 # PARAMS
-BATCH = 8
+BATCH = 16
 NUM_FASES = 5
 COLUMNS = ['EMG_Isquio', 'EMG_Cuadriceps', 'EMG_AductorLargo']
 N_FFT = 32
@@ -54,14 +54,7 @@ test_dataloder = DataLoader(test_dataset, batch_size=BATCH, shuffle=False)
 sample, _ = next(iter(train_dataloader))
 
 
-
 model = GaitRNN(n_classes=NUM_FASES, n_features=N_FFT // 2 + 1, n_hidden=16, n_layers=2, num_channels=len(COLUMNS)).to(device) 
-
-
-
-sample_batch, _ = next(iter(train_dataloader))
-#model(sample_batch); asdf
-
 
 
 ## callbacks ##
