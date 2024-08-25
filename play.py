@@ -29,6 +29,7 @@ NUM_EPOCHS = 300
 
 # Device
 device = get_device()
+#device = 'cpu'
 
 # Load data
 data = load_data('data/marcha_larga')[0]
@@ -56,7 +57,9 @@ sample, _ = next(iter(train_dataloader))
 
 model = GaitRNN(n_classes=NUM_FASES, n_features=N_FFT // 2 + 1, n_hidden=16, n_layers=2, num_channels=len(COLUMNS)).to(device) 
 
-#sample_batch, _ = next(iter(train_dataloader))
+
+
+sample_batch, _ = next(iter(train_dataloader))
 #model(sample_batch); asdf
 
 

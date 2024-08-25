@@ -17,7 +17,7 @@ class SpectrogramDataset(Dataset):
     
     def __getitem__(self, idx):
         data = torch.tensor(self.data[idx]).float()
-        label = torch.tensor(self.label[idx]).float()
+        label = torch.tensor(self.label[idx]).type(torch.LongTensor)
 
         W, C = data.shape
         
