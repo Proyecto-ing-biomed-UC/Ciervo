@@ -11,6 +11,7 @@ class SpectrogramDataset(Dataset):
         self.label = label
         self.device = device
         self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft)
+        self.cache = {}
 
     def __len__(self):
         return len(self.label)
@@ -19,10 +20,15 @@ class SpectrogramDataset(Dataset):
         data = torch.tensor(self.data[idx]).float()
         label = torch.tensor(self.label[idx]).type(torch.LongTensor)
 
-        W, C = data.shape
-        
-        # Convert to spectrogram
-        spec_data = torch.stack([self.transform(data[:, c]) for c in range(C)])
+        if idx not in self.cache:
+            W, C = data.shape        
+            # Convert to spectrogram
+            spec_data = torch.stack([self.transform(data[:, c]) for c in range(C)])
+            self.cache[idx] = spec_data
+        else:
+            spec_data = self.cache[idx]
+
+
 
         spec_data = spec_data.to(self.device)
         label = label.to(self.device)

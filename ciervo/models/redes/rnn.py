@@ -22,7 +22,7 @@ class GaitRNN(L.LightningModule):
         #  x ~ (N, C, F, T )
         x = x.permute(0, 3, 2, 1) # (N, T, F, C)
         x = self.linear(x) # (N, T, F, 1)
-        x = x.squeeze() # (N, T, F)
+        x = x.squeeze(3) # (N, T, F)
 
         # rnn
         out, _ = self.lstm(x)  # (N, T, n_hidden)
