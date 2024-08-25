@@ -8,3 +8,4 @@ influxdb-client
 brainflow
 tkinter
 lightning
+pandas
