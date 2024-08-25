@@ -26,6 +26,7 @@ def label_data(data: Union[list, pd.DataFrame], num_fases: int = 10) -> pd.DataF
 
     low_pass = ButterLowpassFilter(20) 
 
+    df_list = []
     for df in data:
         labels = []
 
@@ -53,10 +54,11 @@ def label_data(data: Union[list, pd.DataFrame], num_fases: int = 10) -> pd.DataF
                     
         df['labels'] = np.array(labels)
 
-    if len(data) == 1:
-        return data[0]
+        # Remover -1
+        df = df[df.labels != -1].reset_index(drop=True)
+        df_list.append(df)
     
-    return data
+    return df_list
 
 
 

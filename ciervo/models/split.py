@@ -2,7 +2,7 @@ from typing import Union
 import pandas as pd
 import numpy as np
 
-def train_test_split(data: Union[list, pd.DataFrame], window_size=125, test_size=0.2, random_state=None):
+def train_test_split(data: Union[list, pd.DataFrame], columna: list,  window_size=125, test_size=0.2, random_state=None):
     """
     Splits the data into training and testing sets based on the specified window size and test size.
     Parameters:
@@ -19,9 +19,32 @@ def train_test_split(data: Union[list, pd.DataFrame], window_size=125, test_size
     if isinstance(data, pd.DataFrame):
         data = [data]
 
-    train = []
-    test = []
-    for df in data:
+    train_data = []
+    train_label = []
+
+    test_data = []
+    test_label = []
+
+
+    columna = [c.strip() for c in columna]
+
+    for df_idx, df in enumerate(data):
+
+        # check if columna is in df.columns
+        column_is_present = True
+        for c in columna:
+            if c not in df.columns:
+                print(f"El archivo id: {df_idx} no cuenta con la columna {c}. Archivo ignorado")
+                column_is_present = False
+
+        # Ignora archivo
+        if not column_is_present:
+            continue
+
+        values = df[columna]
+        label = df['labels']
+
+
         # number of windows
         n_windows = int(len(df)/window_size)
 
@@ -34,14 +57,19 @@ def train_test_split(data: Union[list, pd.DataFrame], window_size=125, test_size
         # split data
         for i in range(n_windows):
             if i in indices:
-                test.append(df.iloc[i*window_size:(i+1)*window_size])
+                test_data.append(values.iloc[i*window_size:(i+1)*window_size])
+                test_label.append(label.iloc[(i+1)*window_size])
             else:
-                train.append(df.iloc[i*window_size:(i+1)*window_size])
+                train_data.append(values.iloc[i*window_size:(i+1)*window_size])
+                train_label.append(label.iloc[(i+1)*window_size])
+
+    train_data = np.array(train_data)
+    train_label = np.array(train_label)
+
+    test_data = np.array(test_data)
+    test_label = np.array(test_label)
     
-    train = np.array(train)
-    test = np.array(test)
-    
-    return train, test
+    return train_data, train_label, test_data, test_label
 
 
 
