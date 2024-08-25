@@ -1,5 +1,6 @@
 import os; os.system('clear')
 from paho.mqtt import client as mqtt_client
+from PyQt5 import QtWidgets
 import numpy as np
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
@@ -33,7 +34,7 @@ class Graph:
         self.buffer = Buffer(self.window, roll=True)
 
 
-        self.app = QtGui.QApplication([])
+        self.app = QtWidgets.QApplication([])
         self.win = pg.GraphicsWindow(title='BrainFlow Plot', size=(800, 600))
 
         self._init_timeseries()

@@ -67,7 +67,7 @@ class DataCaptureApp:
 
     def run_docker_compose_up(self):
         try:
-            subprocess.run(["docker-compose", "up", "--build"], check=True)
+            subprocess.run(["docker", "compose", "up", "--build"], check=True)
             self.start_recording_after_containers_start()  # Iniciar la grabación solo cuando los contenedores estén listos
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"Error al iniciar Docker: {e}")
@@ -75,7 +75,7 @@ class DataCaptureApp:
     def start_recording_after_containers_start(self):
         # Verificar que los contenedores estén en ejecución
         while True:
-            result = subprocess.run(["docker-compose", "ps", "--services", "--filter", "status=running"], stdout=subprocess.PIPE, text=True)
+            result = subprocess.run(["docker", "compose", "ps", "--services", "--filter", "status=running"], stdout=subprocess.PIPE, text=True)
             running_services = result.stdout.splitlines()
 
             if "nanomq" in running_services and "stream" in running_services and "influxdb" in running_services:
@@ -88,7 +88,7 @@ class DataCaptureApp:
 
     def run_docker_compose_down(self):
         try:
-            subprocess.run(["docker-compose", "down"], check=True)
+            subprocess.run(["docker", "compose", "down"], check=True)
         except subprocess.CalledProcessError as e:
             messagebox.showerror("Error", f"Error al detener Docker: {e}")
 
