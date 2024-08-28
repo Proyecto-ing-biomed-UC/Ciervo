@@ -1,6 +1,6 @@
 # ignorar csv en la carpeta data
 data/**/*.csv
-
+lightning_logs/
 
 
 # Byte-compiled / optimized / DLL files
