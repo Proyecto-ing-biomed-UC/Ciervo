@@ -6,10 +6,9 @@ import torch
 
 class SpectrogramDataset(Dataset):
     
-    def __init__(self, data, label, device='cpu', n_fft=16):
+    def __init__(self, data, label, n_fft=16):
         self.data = data
         self.label = label
-        self.device = device
         self.transform = torchaudio.transforms.Spectrogram(n_fft=n_fft)
         self.cache = {}
 
@@ -28,10 +27,6 @@ class SpectrogramDataset(Dataset):
         else:
             spec_data = self.cache[idx]
 
-
-
-        spec_data = spec_data.to(self.device)
-        label = label.to(self.device)
 
         return spec_data, label
     
