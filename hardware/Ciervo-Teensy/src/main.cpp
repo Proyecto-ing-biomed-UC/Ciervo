@@ -105,13 +105,21 @@ void loop() {
 
         myPID.Compute();
         send_pid_value_to_motor(Output);
-        //Serial.print("PID intput ");
-        //Serial.println(Input);
-        //Serial.print("raw pos ");
-        //Serial.println(rawPos);
-        //Serial.print("PID output ");
-        //Serial.println(Output);
-        //delay(10);
+
+        // Carácter de inicio y término
+        char startChar = '<';
+        char endChar = '>';
+
+        // Enviar el carácter de inicio
+        Serial.write(startChar);
+
+        // Enviar los números como bytes
+        Serial.write((byte*)&Setpoint, sizeof(double));
+        Serial.write((byte*)&Input, sizeof(double));
+        Serial.write((byte*)&Output, sizeof(double));
+
+        // Enviar el carácter de término
+        Serial.write(endChar);
 }
 
 void send_pid_value_to_motor(double pid_value){
