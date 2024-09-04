@@ -3,6 +3,8 @@ data/**/*.csv
 lightning_logs/
 
 
+**/*.DS_Store
+
 # Byte-compiled / optimized / DLL files
 recordings/*.npy
 __pycache__/
