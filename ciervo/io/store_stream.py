@@ -58,7 +58,7 @@ class StoreStream:
 
     def on_message(self, client, userdata, msg):
         data = np.frombuffer(msg.payload, dtype=p.PRECISION)
-        data = data.reshape(6, -1)
+        data = data.reshape(p.NUM_CHANNELS, -1)
         self.buffer.data = data
 
 

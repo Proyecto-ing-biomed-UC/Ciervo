@@ -1,0 +1,1 @@
+Esta carpeta contiene archivos para enviar marcadores al stream. Estos archivos se utilizan para crear experimentos y posteriormente realizar el entrenamiento de los modelos.
