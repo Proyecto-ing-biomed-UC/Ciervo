@@ -6,6 +6,5 @@ tqdm
 paho-mqtt
 influxdb-client
 brainflow
-tkinter
 lightning
 pandas

@@ -31,13 +31,13 @@ class Publish:
     def update(self):
         #data = self.board_shim.get_current_board_data(self.num_points)  
         data = self.board_shim.get_board_data(self.num_points)
-        start_time  = data[30, 0]
+        start_time  = data[p.SYN_TIME_CHANNEL, 0]
         while True:
             time.sleep(2/self.sampling_rate)  # Esperar al menos 2 muestras
             #data = self.board_shim.get_current_board_data(self.num_points)  # np.float64 default
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
             data[30 ,:] -=  start_time
-            data = data[p.CHANNELS, :]
+            data = data[p.SYN_ALL_CHANNELS, :]
             data = data.astype(p.PRECISION)
             data_bytes = data.tobytes()
 

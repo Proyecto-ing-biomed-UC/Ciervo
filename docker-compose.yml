@@ -16,7 +16,7 @@ services:
 
   stream:
     # image: cgvalle/ciervo_stream:latest
-    platform: linux/arm64
+    # platform: linux/arm64
     restart: always
     pull_policy: always
     build:

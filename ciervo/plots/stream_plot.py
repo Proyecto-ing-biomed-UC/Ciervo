@@ -51,12 +51,22 @@ class Graph:
             po = self.win.addPlot(row=i, col=0)
             po.showAxis('left', False)
             po.setMenuEnabled('left', False)
+
+            # Add time axis to the last plot
             if i == p.NUM_CHANNELS - 1:
                 po.showAxis('bottom', True)
             else:
                 po.showAxis('bottom', False)
             po.setMenuEnabled('bottom', False)
-            po.setLabel('left', f'EMG {i+1}')
+
+            # Y axis label
+            if i < len(p.EMG_CHANNELS):
+                po.setLabel('left', f'CH{i+1}')
+            if i >= len(p.EMG_CHANNELS) and i < len(p.EMG_CHANNELS) + len(p.ACC_CHANNELS):
+                po.setLabel('left', f'ACC{i+1}') 
+            if i == len(p.EMG_CHANNELS) + len(p.ACC_CHANNELS):
+                po.setLabel('left', 'Time')
+
             if i == 0:
                 po.setTitle('TimeSeries Plot')
             self.plots.append(po)
