@@ -8,13 +8,18 @@ import ciervo.parameters as p
 from ciervo.models import features_v1
 # train model
 from sklearn.ensemble import RandomForestClassifier
+# svm
+from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
 
 
 if __name__ == "__main__":
     # cargar data
-    data = np.load('/Users/carlos/Documents/github/Ciervo/recordings/test_contraction.npy')
+    data = np.load('/Users/carlos/Documents/github/Ciervo/recordings/only_ch1.npy')
+
+    n_points = data.shape[1]
+    print(f"Tiempo de grabación: {n_points/250} s")
 
     df = pd.DataFrame(data.T, columns=p.CH_NAMES)
     df['labels'] = df['MARKERS']
@@ -22,11 +27,11 @@ if __name__ == "__main__":
     df = df[df['labels'] != 0]
     df['labels'] = df['labels'].apply(lambda x: 1 if x == 2 else 0)
 
-    train_data, train_label,  test_data, test_label = train_test_split(df, 
-                                         columna=['C1', 'C2', 'C3', 'C4'],
-                                         window_size=50,
+    train_data, train_label,  test_data, test_label = train_test_split([df], 
+                                         columna=['C1'],
+                                         window_size=20,
                                          overlap=0, 
-                                         test_size=0.1,
+                                         test_size=0.2,
                                          random_state=42)
     print(train_data.shape, train_label.shape, test_data.shape, test_label.shape)
 
@@ -59,7 +64,6 @@ if __name__ == "__main__":
     clf = joblib.load('model.pkl')
     y_pred = clf.predict(test_features)
     print(accuracy_score(test_label, y_pred))
-    print(y_pred)
 
 
 
