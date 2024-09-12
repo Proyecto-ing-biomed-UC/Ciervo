@@ -44,8 +44,6 @@ class Publish:
             data_bytes = data.tobytes()
 
 
-            # Quiza aqui agregar el pre-procesamiento
-
             self.client.publish(self.topic, data_bytes, qos=0)
 
 def on_connect(client, userdata, flags, rc, properties):
