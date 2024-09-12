@@ -32,4 +32,4 @@ COPY . /app/
 RUN pip install --no-cache-dir numpy paho-mqtt
 
 # Run the application
-CMD ["python", "-m", "ciervo.simulation.synthetic_stream"]
+CMD ["python", "-m", "ciervo.io.stream"]

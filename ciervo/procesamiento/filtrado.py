@@ -120,3 +120,33 @@ class ButterBandpassFilter:
     def apply(self, data):
         y = signal.filtfilt(self.b, self.a, data, axis=0)
         return y
+
+class NotchFilter:
+    """
+    Initializes a notch filter.
+
+    Args:
+        cutoff (float): The cutoff frequency of the filter.
+        fs (int, optional): The sampling frequency of the input data. Defaults to 250.
+        Q (float, optional): The quality factor of the filter. Defaults to 30.
+
+    """
+
+    """
+    Applies the notch filter to the input data.
+
+    Args:
+        data (array-like): The input data to be filtered.
+
+    Returns:
+        array-like: The filtered output data.
+    """
+    def __init__(self, cutoff, fs=250, Q=30):
+        self.cutoff = cutoff
+        self.fs = fs
+        self.Q = Q
+        self.b, self.a = signal.iirnotch(cutoff, Q, fs)
+
+    def apply(self, data):
+        y = signal.filtfilt(self.b, self.a, data, axis=0)
+        return y

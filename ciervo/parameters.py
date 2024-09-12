@@ -5,7 +5,7 @@ import numpy as np
 BROKER_HOST = '100.90.57.1'
 URL_INFLUXDB = 'http://100.90.57.1:8086'
 BROKER_PORT = 1883
-PRECISION = np.float64
+PRECISION = np.float32
 
 
 PACKAGE_CHANNEL = 0
