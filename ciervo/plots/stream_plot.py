@@ -60,12 +60,8 @@ class Graph:
             po.setMenuEnabled('bottom', False)
 
             # Y axis label
-            if i < len(p.EMG_CHANNELS):
-                po.setLabel('left', f'CH{i+1}')
-            if i >= len(p.EMG_CHANNELS) and i < len(p.EMG_CHANNELS) + len(p.ACC_CHANNELS):
-                po.setLabel('left', f'ACC{i+1}') 
-            if i == len(p.EMG_CHANNELS) + len(p.ACC_CHANNELS):
-                po.setLabel('left', 'Time')
+            po.setLabel('left', p.CH_NAMES[i])
+     
 
             if i == 0:
                 po.setTitle('TimeSeries Plot')

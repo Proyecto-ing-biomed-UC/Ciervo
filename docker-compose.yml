@@ -2,7 +2,6 @@
 services:
   nanomq:
     image: emqx/nanomq:latest
-    platform: linux/arm64
     ports:
       - "1883:1883"
       - "8083:8083"
@@ -16,7 +15,6 @@ services:
 
   stream:
     # image: cgvalle/ciervo_stream:latest
-    # platform: linux/arm64
     restart: always
     pull_policy: always
     build:
@@ -24,37 +22,36 @@ services:
       dockerfile: docker/Dockerfile.stream
     depends_on:
       - nanomq
-      - influxdb
 
-  influxdb:
-    image: influxdb:latest
-    container_name: influxdb
-    ports:
-      - "8086:8086"
-    environment:
-      - DOCKER_INFLUXDB_INIT_MODE=setup
-      - DOCKER_INFLUXDB_INIT_USERNAME=Hellonston
-      - DOCKER_INFLUXDB_INIT_PASSWORD=Cierv@12345
-      - DOCKER_INFLUXDB_INIT_ORG=Ciervo
-      - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
-      - DOCKER_INFLUXDB_INIT_RETENTION=1w
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
+#   influxdb:
+#     image: influxdb:latest
+#     container_name: influxdb
+#     ports:
+#       - "8086:8086"
+#     environment:
+#       - DOCKER_INFLUXDB_INIT_MODE=setup
+#       - DOCKER_INFLUXDB_INIT_USERNAME=Hellonston
+#       - DOCKER_INFLUXDB_INIT_PASSWORD=Cierv@12345
+#       - DOCKER_INFLUXDB_INIT_ORG=Ciervo
+#       - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
+#       - DOCKER_INFLUXDB_INIT_RETENTION=1w
+#       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
       
-    volumes:
-      - influxdb-data:/var/lib/influxdb
-  data_collector:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.getData
-    container_name: data_collector
-    environment:
-      - DOCKER_INFLUXDB_INIT_ORG=Ciervo
-      - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
-      - DOCKER_INFLUXDB_INIT_RETENTION=1w
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
-    depends_on:
-      - stream
-      - influxdb
-    command: python3 /app/ciervo/saveData/getDataFromRaspberry.py
-volumes:
-  influxdb-data:
+#     volumes:
+#       - influxdb-data:/var/lib/influxdb
+#   data_collector:
+#     build:
+#       context: .
+#       dockerfile: docker/Dockerfile.getData
+#     container_name: data_collector
+#     environment:
+#       - DOCKER_INFLUXDB_INIT_ORG=Ciervo
+#       - DOCKER_INFLUXDB_INIT_BUCKET=Ciervo
+#       - DOCKER_INFLUXDB_INIT_RETENTION=1w
+#       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=holas
+#     depends_on:
+#       - stream
+#       - influxdb
+#     command: python3 /app/ciervo/saveData/getDataFromRaspberry.py
+# volumes:
+#   influxdb-data:

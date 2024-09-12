@@ -4,6 +4,7 @@ from brainflow.board_shim import BoardShim, BrainFlowInputParams, BoardIds
 import time
 from paho.mqtt import client as mqtt_client
 import ciervo.parameters as p
+import numpy as np
 
 class Publish:
     def __init__(self, board_shim):
@@ -15,18 +16,27 @@ class Publish:
         self.window_size = 4
         self.num_points = self.window_size * self.sampling_rate
 
+        self.marker = -1
+
         # MQTT
         self.broker = p.BROKER_HOST
         self.port = p.BROKER_PORT
         self.topic = p.TOPIC
         self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'openbci')
         self.client.on_connect = on_connect
+        self.client.on_message = self.on_message
+
+
         self.client.connect(self.broker, self.port)
+        self.client.subscribe('marker')  # Subscribe to marker topic
         self.client.loop_start()
 
         self.update()
         self.client.loop_stop()
-
+    
+    def on_message(self, client, userdata, msg):
+        self.marker = int(msg.payload.decode('utf-8'))
+        
 
     def update(self):
         #data = self.board_shim.get_current_board_data(self.num_points)  
@@ -37,11 +47,17 @@ class Publish:
             #data = self.board_shim.get_current_board_data(self.num_points)  # np.float64 default
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
             data[30 ,:] -=  start_time
+
+            
+            # Check if there is a marker
+            if self.marker != -1:
+                data[p.SYN_MARKER_CHANNEL, :] = self.marker
+                #self.marker = -1
+
             data = data[p.SYN_ALL_CHANNELS, :]
             data = data.astype(p.PRECISION)
             data_bytes = data.tobytes()
 
-            # Quiza aqui agregar el pre-procesamiento
 
             self.client.publish(self.topic, data_bytes, qos=0)
 
