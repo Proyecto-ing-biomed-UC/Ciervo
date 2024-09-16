@@ -5,11 +5,11 @@ import numpy as np
 BROKER_HOST = '100.90.57.1'
 URL_INFLUXDB = 'http://100.90.57.1:8086'
 BROKER_PORT = 1883
-PRECISION = np.float64
+PRECISION = np.float32
 
 
 PACKAGE_CHANNEL = 0
-CH_NAMES = ['C1', 'C32', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'AX', 'AY', 'AZ', 'TIME', 'PKG', 'MARKER']
+CH_NAMES = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'AX', 'AY', 'AZ', 'TIME', 'PKG', 'MARKERS']
 
 # Real stream
 EMG_CHANNELS = [1, 2, 3, 4, 5, 6, 7,8 ]  # 

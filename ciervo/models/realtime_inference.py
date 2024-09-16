@@ -36,6 +36,8 @@ class RealTimeInference:
 
         # modelo
         self.emg_model = emg_model
+        if self.emg_model is not None:
+            self.emg_model = joblib.load(emg_model)
 
         # Buffer
         self.buffer = Buffer(self.window, roll=True)
@@ -86,6 +88,7 @@ class RealTimeInference:
             
             if self.emg_model is not None:
                 prediction = self.emg_model.predict(features)
+                print(prediction)
                 
             
 
@@ -109,4 +112,4 @@ def on_connect(client, userdata, flags, rc, properties):
 
 if __name__ == '__main__':
 
-    RealTimeInference(emg_prepro=features_v1)
+    RealTimeInference(emg_prepro=features_v1, emg_model='model.pkl')

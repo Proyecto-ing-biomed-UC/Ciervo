@@ -1,1 +1,1 @@
-from .filtrado import ButterBandpassFilter, ButterHighpassFilter, ButterLowpassFilter
+from .filtrado import ButterBandpassFilter, ButterHighpassFilter, ButterLowpassFilter, NotchFilter

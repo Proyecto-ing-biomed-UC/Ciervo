@@ -52,7 +52,6 @@ class Publish:
             # Check if there is a marker
             if self.marker != -1:
                 data[p.SYN_MARKER_CHANNEL, :] = self.marker
-                #self.marker = -1
 
             data = data[p.SYN_ALL_CHANNELS, :]
             data = data.astype(p.PRECISION)
