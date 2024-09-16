@@ -1,17 +1,5 @@
 
 services:
-  nanomq:
-    image: emqx/nanomq:latest
-    ports:
-      - "1883:1883"
-      - "8083:8083"
-    environment:
-      - EMQX_NAME=nanomq
-      - EMQX_LISTENER__TCP__EXTERNAL=1883
-      - EMQX_LISTENER__WS__EXTERNAL=8083
-      - EMQX_ALLOW_ANONYMOUS=true
-      - NANOMQ_NUM_TASKQ_THREAD=4
-      - NANOMQ_NUM_WORKER_THREAD=4
 
   # stream:
   #   # image: cgvalle/ciervo_stream:latest
