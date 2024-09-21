@@ -11,8 +11,9 @@ ser = serial.Serial('COM13', 9600, timeout=1)
 time.sleep(3)
 
 def sendmess():
-    bin = str(start) + str(value) + str(end) #Pack float value into 4 bytes
-    data = ser.write(bin.encode())
+    #bin_msg = str(value) + '\n'
+    bin_msg = struct.pack('f',value)
+    data = ser.write(bin_msg.encode())
     echo = ser.readline()
     print("Echo: " + echo)
     #ser.close()
