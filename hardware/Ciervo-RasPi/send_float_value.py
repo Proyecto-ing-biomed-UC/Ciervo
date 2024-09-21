@@ -32,7 +32,7 @@ def receive_message_from_arduino():
 # Ejemplo de uso
 try:
     number = 0.0
-    numbers = [0.0, 127.0, 255.0]
+    numbers = [0.0, 64.0, 127.0, 127.0 + 64.0, 255.0]
     i = 0
     while True:
         # Pide un valor flotante
@@ -46,7 +46,7 @@ try:
         #receive_message_from_arduino()
         
         # Esperar antes de enviar otro dato
-        time.sleep(5)
+        time.sleep(0.1)
         i += 1
         if i == len(numbers):
             i = 0
