@@ -43,7 +43,7 @@ uint8_t seen = 0;
 double Setpoint, Input, Output;
 
 //Specify the links and initial tuning parameters
-double Kp=3, Ki=0, Kd=0;
+double Kp=5, Ki=1, Kd=2;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 float angle_setpoint;
@@ -87,16 +87,15 @@ void loop() {
 
         Setpoint = value;
 
-        //Serial.print("setpoint: ");
-        //Serial.print(Setpoint);
-        //Serial.print("input: ");
-        //Serial.print(Input);
-        //Serial.print("output: ");
-        //Serial.println(Output);
-
-        //int val1 = (int)Setpoint;
-
-        //analogWrite(24, val1);
+        Serial.print("<setpoint: ");
+        Serial.print(Setpoint);
+        Serial.print(";input: ");
+        Serial.print(Input);
+        Serial.print(";output: ");
+        Serial.print(Output);
+        Serial.print(";raw enc: ");
+        Serial.print(rawPos);
+        Serial.println(">");
 
         // Reiniciar el estado
         receiving = false;
@@ -115,7 +114,8 @@ void loop() {
         upos = myACE.upos();               // get logical position - unsigned 0 to +127
         mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
 
-        Input = map(rawPos, 0, 127, 0, 360);
+        Input = map(rawPos, 0, 127, 360, 0);
+        Input = Input - 133 - 4;
 
         myPID.Compute();
         send_pid_value_to_motor(Output);
