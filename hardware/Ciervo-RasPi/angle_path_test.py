@@ -50,6 +50,7 @@ thread = Thread(target = loop_read, args = (ser, ))
 thread.start()
 
 for angle in angle_data:
+    print(f'>>>{angle}')
     send_message(ser, angle)
     sleep(1/frequency)
 
