@@ -1,35 +1,28 @@
 #include <Arduino.h>
 
 int d = 250;
-float X;
-float Y;
+float start_bytes;
+float value;
+float end_bytes;
 char buffer[40];
+
 void setup() {
   // initialize the serial communication:
   Serial.begin(9600);
-  pinMode(2, OUTPUT);
   
 }
 
 void loop() {
-  digitalWrite(2, HIGH);
-  delay(d);
-  digitalWrite(2, LOW);
-  delay(d);
  // reply only when you receive data:
   if (Serial.available() > 0) {
     // read the incoming byte:
-    d = 1000;
-    X = Serial.parseFloat();
-    Y = Serial.parseFloat();
+    start_bytes = Serial.parseFloat();
+    value = Serial.parseFloat();
+    end_bytes = Serial.parseFloat();
 
     // say what you got:
-    sprintf(buffer, "X: %f Y: %f", X, Y);
+    sprintf(buffer, "start: %f angle: %f end: %f", start_bytes, value, end_bytes);
     Serial.println(buffer);
     
-  }
-  else{
-   Serial.println(buffer);  
-d = 20;
   }
 }
