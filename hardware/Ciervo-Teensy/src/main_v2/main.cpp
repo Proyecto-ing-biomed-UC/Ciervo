@@ -87,12 +87,12 @@ void loop() {
 
         Setpoint = value;
 
-        Serial.print("setpoint: ");
-        Serial.print(Setpoint);
-        Serial.print("input: ");
-        Serial.print(Input);
-        Serial.print("output: ");
-        Serial.println(Output);
+        //Serial.print("setpoint: ");
+        //Serial.print(Setpoint);
+        //Serial.print("input: ");
+        //Serial.print(Input);
+        //Serial.print("output: ");
+        //Serial.println(Output);
 
         //int val1 = (int)Setpoint;
 
