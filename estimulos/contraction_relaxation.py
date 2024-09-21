@@ -35,7 +35,7 @@ for _ in range(repetitions):
         print(f"Relaja!")
     else:
         print(f"Contrae!")
-    sleep(1+ random.random())
+    sleep(2)
 
 
 client.publish(topic, 0)
