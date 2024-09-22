@@ -16,7 +16,7 @@ from sklearn.metrics import accuracy_score
 
 if __name__ == "__main__":
     # cargar data
-    data = np.load('/Users/carlos/Documents/github/Ciervo/recordings/only_ch1.npy')
+    data = np.load('recordings/parado1.npy')
 
     n_points = data.shape[1]
     print(f"Tiempo de grabación: {n_points/250} s")
@@ -28,8 +28,8 @@ if __name__ == "__main__":
     df['labels'] = df['labels'].apply(lambda x: 1 if x == 2 else 0)
 
     train_data, train_label,  test_data, test_label = train_test_split([df], 
-                                         columna=['C1'],
-                                         window_size=20,
+                                         columna=['C1', 'C2', 'C3', 'C4'],
+                                         window_size=25,
                                          overlap=0, 
                                          test_size=0.2,
                                          random_state=42)

@@ -4,7 +4,7 @@ import ciervo.parameters as p
 
 class Buffer:
     def __init__(self, duration, roll=False):
-        self.window = duration * p.SAMPLE_RATE
+        self.window = int(duration * p.SAMPLE_RATE)
         self._data = np.zeros((p.NUM_CHANNELS, self.window ), dtype=p.PRECISION)
         self.idx = 0
         self.roll = roll
