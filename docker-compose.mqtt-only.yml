@@ -12,4 +12,5 @@ services:
       - EMQX_ALLOW_ANONYMOUS=true
       - NANOMQ_NUM_TASKQ_THREAD=4
       - NANOMQ_NUM_WORKER_THREAD=4
+    restart: always 
 
