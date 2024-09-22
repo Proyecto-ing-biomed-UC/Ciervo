@@ -76,6 +76,8 @@ class Graph:
 
     def update(self):
         data = self.buffer.data
+        if data.shape[1] == 0:
+            return
         for count, channel in enumerate(range(p.NUM_CHANNELS)):
             self.curves[count].setData(data[channel].tolist())
 
