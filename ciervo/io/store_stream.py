@@ -12,7 +12,7 @@ def natural_sort(l):
     return sorted(l, key=alphanum_key)
 
 
-broker = p.BROKER_HOST
+broker = '127.0.0.1'
 port = 1883
 topic = "data"
 

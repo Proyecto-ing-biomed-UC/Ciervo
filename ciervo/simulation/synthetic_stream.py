@@ -58,7 +58,7 @@ class Publish:
             data_bytes = data.tobytes()
 
 
-            self.client.publish(self.topic, data_bytes, qos=0)
+            self.client.publish(self.topic, data_bytes, qos=1)
 
 def on_connect(client, userdata, flags, rc, properties):
     print(f"Connected with result code {rc}")

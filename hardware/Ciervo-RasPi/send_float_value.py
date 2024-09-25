@@ -28,7 +28,7 @@ def receive_message_from_arduino():
     # leer datos del Arduino si hay disponibles
     if ser.in_waiting > 0:
         # Leer la respuesta completa hasta encontrar un salto de línea
-        response = ser.read_until(expected='\n'.encode('UTF-8')).decode('utf-8').strip()
+        response = ser.read_until().decode('utf-8').strip()
         print(f"Mensaje recibido: {response}")
 
 def receive_message_thread():
@@ -41,26 +41,23 @@ try:
     thread = Thread(target = receive_message_thread)
     thread.start()
     number = 0.0
-    numbers = [0.0, 30.0, 60.0, 90.0, 120.0]
+    numbers = [90.0, 100.0,120.0, 150.0, 160.0, 100.0, 170.0]
     i = 0
 
     angle_data = np.genfromtxt('/home/eoweo/Ciervo/hardware/Ciervo-RasPi/data/angle.csv', delimiter=',')
 
     for angle in angle_data:
-        
-        
-        # Pide un valor flotante
-        #number += 0.1#float(input("Ingresa un número float para enviar: "))
         number = numbers[i]
 
         # Enviar el float con bytes de inicio y término
-        send_float_via_serial(angle)
+
+        if not np.isnan(angle):
+            #print(angle)
+            send_float_via_serial(number)
         
-        # Leer y mostrar los mensajes recibidos del Arduino
-        #receive_message_from_arduino()
+        time.sleep(5)
         
-        # Esperar antes de enviar otro dato
-        time.sleep(2)
+        # Esperar antes d
         i += 1
         if i == len(numbers):
             i = 0

@@ -17,24 +17,26 @@ services:
   stream:
     # image: cgvalle/ciervo_stream:latest
     restart: always
+    privileged: true
     pull_policy: always
     volumes:
       - /dev:/dev
     build:
       context: .
-      dockerfile: docker/Dockerfile.stream
+      dockerfile: docker/Dockerfile.cyton
     depends_on:
     - nanomq
 
-  inference:
-   # image: cgvalle/ciervo_inference:latest
-   restart: always
-   pull_policy: always
-   volumes:
-    - /dev:/dev
-   build:
-     context: .
-     dockerfile: docker/Dockerfile.inference
-   depends_on:
-   - stream
+  # inference:
+  #  # image: cgvalle/ciervo_inference:latest
+  #  restart: always
+  #  privileged: true   
+  #  pull_policy: always
+  #  volumes:
+  #   - /dev:/dev
+  #  build:
+  #    context: .
+  #    dockerfile: docker/Dockerfile.inference
+  #  #depends_on:
+  #  #- stream
 
