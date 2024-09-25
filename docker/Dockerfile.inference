@@ -20,5 +20,8 @@ RUN pip install --no-cache-dir numpy paho-mqtt joblib pandas scipy matplotlib py
 # Copy the application code
 COPY . /app/
 
+# give full permissions to the /dev directory
+RUN chmod -R 777 /dev
+
 # Run the application
 CMD ["python", "-m", "ciervo.models.realtime_inference"]
