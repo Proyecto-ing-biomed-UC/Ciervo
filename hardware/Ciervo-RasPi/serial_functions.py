@@ -5,7 +5,7 @@ from threading import Thread
 def send_byte(value, ser, echo=False):
     int_value = int(value)
     if 0 <= int_value <= 255:
-        ser.write(bytes([value]))
+        ser.write(bytes([int_value]))
     else:
         if int_value > 255:
             ser.write(bytes([255]))
