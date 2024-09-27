@@ -25,14 +25,18 @@ def read_byte(ser, echo=False):
         return received_value
 
 def read_byte_loop(ser):
-    while True:
-        read_byte(ser, echo=True)
+    try:
+        while True:
+            read_byte(ser, echo=True)
+    
+    except:
+        return
 
 
 
 if __name__ == '__main__':
     try:
-        serial_port = serial.Serial('COM3', 9600)
+        serial_port = serial.Serial('COM13', 9600)
         time.sleep(2)
 
         thread = Thread(target = read_byte_loop, args=(serial_port,))
