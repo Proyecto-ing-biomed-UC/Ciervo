@@ -20,8 +20,10 @@ def read_byte(ser, echo=False):
     if ser.in_waiting > 0:
         received_data = ser.readline()
         #received_value = int.from_bytes(received_data, byteorder='big')
+        decoded_data = received_data.decode('utf-8').strip()
+        int_val = int(decoded_data)
         if echo:
-            print(f"Received value: {received_data}")
+            print(f"Received value: {int_val}")
         return received_data
 
 def read_byte_loop(ser):
