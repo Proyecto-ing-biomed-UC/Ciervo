@@ -36,8 +36,6 @@ def read_byte_loop(ser):
 
 if __name__ == '__main__':
     try:
-        serial_port = serial.Serial('COM13', 9600)
-
         serial_port = serial.Serial(port='COM13',
                          baudrate=9600,
                          bytesize=serial.EIGHTBITS,
