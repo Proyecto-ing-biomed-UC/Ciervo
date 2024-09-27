@@ -46,6 +46,8 @@ if __name__ == '__main__':
                          timeout=1)
         time.sleep(2)
 
+        frequency = 10000 # Hz
+
         thread = Thread(target = read_byte_loop, args=(serial_port,))
         thread.start()
 
@@ -58,7 +60,7 @@ if __name__ == '__main__':
             if angle > 255.0:
                 angle = 0.3
                 
-            time.sleep(0.1)
+            time.sleep(1.0/frequency)
     
     except KeyboardInterrupt:
         print("Terminando...")

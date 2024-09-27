@@ -72,6 +72,8 @@ void loop() {
     int receivedByte = Serial.read();
 
     Setpoint = (double)receivedByte;
+
+    Serial.println(receivedByte);
   
   }
 
