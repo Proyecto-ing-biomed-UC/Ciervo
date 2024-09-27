@@ -49,10 +49,15 @@ if __name__ == '__main__':
         thread = Thread(target = read_byte_loop, args=(serial_port,))
         thread.start()
 
-        angle = 92.5
+        angle = 0.3
 
         while True:
             send_byte(angle, serial_port, echo=True)
+            angle += 1.0
+
+            if angle > 255.0:
+                angle = 0.3
+                
             time.sleep(0.1)
     
     except KeyboardInterrupt:
