@@ -18,11 +18,11 @@ def send_byte(value, ser, echo=False):
 
 def read_byte(ser, echo=False):
     if ser.in_waiting > 0:
-        received_data = ser.read(1)
-        received_value = int.from_bytes(received_data, byteorder='big')
+        received_data = ser.readline()
+        #received_value = int.from_bytes(received_data, byteorder='big')
         if echo:
-            print(f"Received value: {received_value}")
-        return received_value
+            print(f"Received value: {received_data}")
+        return received_data
 
 def read_byte_loop(ser):
     try:
