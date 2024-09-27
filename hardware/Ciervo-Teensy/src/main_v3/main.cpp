@@ -10,7 +10,7 @@
 #define ACE_ADDR 0x20
 #include <ACE128.h>
 #include <ACE128map87654321.h>
-#include <Adafruit_MAX31865.h>
+//#include <Adafruit_MAX31865.h>
 
 #ifdef ACE128_MCP23008
   #define ACE_PROBE_ADDR ACE_ADDR | 0x20
@@ -69,41 +69,10 @@ void setup() {
 
 void loop() {
   if (Serial.available() > 0) {
-    byte incomingByte = Serial.read();
+    int receivedByte = Serial.read();
 
-    // Si recibimos el byte de inicio, comenzamos a almacenar los bytes del float
-    if (incomingByte == START_BYTE) {
-      bufferIndex = 0;
-      receiving = true;
-    }
-    // Si estamos recibiendo y aún no hemos almacenado 4 bytes
-    else if (receiving) {
-      if (bufferIndex < 4) {
-        buffer[bufferIndex++] = incomingByte;
-      }
-      
-      // Si ya hemos recibido los 4 bytes del float y el siguiente byte es el de término
-      if (bufferIndex == 4 && incomingByte == END_BYTE) {
-        // Convertir los bytes almacenados en un valor float
-        memcpy(&value, buffer, sizeof(value));
-
-        Setpoint = value;
-
-        //Serial.print("setpoint: ");
-        //Serial.print(Setpoint);
-        //Serial.print("input: ");
-        //Serial.print(Input);
-        //Serial.print("output: ");
-        //Serial.println(Output);
-
-        //int val1 = (int)Setpoint;
-
-        //analogWrite(24, val1);
-
-        // Reiniciar el estado
-        receiving = false;
-      }
-    }
+    Setpoint = (double)receivedByte;
+  
   }
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
@@ -113,9 +82,14 @@ void loop() {
 
         pinPos = myACE.acePins();          // get IO expander pins - this is for debug
         rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
-        pos = myACE.pos();                 // get logical position - signed -64 to +63
-        upos = myACE.upos();               // get logical position - unsigned 0 to +127
-        mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
+
+        //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
+        //
+        //pos = myACE.pos();                 // get logical position - signed -64 to +63
+        //upos = myACE.upos();               // get logical position - unsigned 0 to +127
+        //mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
+        //
+        //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
 
         Input = map(rawPos, 0, 127, 0, 360);
 
@@ -153,8 +127,6 @@ void setup_motor(void){
 
 void setup_pid(void){
   //initialize the variables we're linked to
-  //Input = 110;
-  //Setpoint = 100;
 
   //turn the PID on
   myPID.SetMode(AUTOMATIC);
