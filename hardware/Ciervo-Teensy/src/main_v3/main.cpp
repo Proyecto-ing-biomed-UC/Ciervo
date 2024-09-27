@@ -4,8 +4,8 @@
 #define PID_INPUT 41
 #define PID_OUTPUT 3
 
-#define LPWM_PIN 15
-#define RPWM_PIN 14
+#define LPWM_PIN 22
+#define RPWM_PIN 15
 
 #define ACE_ADDR 0x20
 #include <ACE128.h>
@@ -70,6 +70,15 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     int receivedByte = Serial.read();
+
+    // Limit angle setpoint range
+    // Uncomment to remove limit
+    if (receivedByte > 175){
+      receivedByte = 175;
+    }
+    else if (receivedByte < 95){
+      receivedByte = 95;
+    }
 
     Setpoint = (double)receivedByte;
 
