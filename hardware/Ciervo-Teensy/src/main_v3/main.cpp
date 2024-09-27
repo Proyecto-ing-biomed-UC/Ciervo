@@ -19,7 +19,7 @@
 #endif
 
 ACE128 myACE(ACE_ADDR, (uint8_t*)encoderMap_87654321); // I2C without using EEPROM
-Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13); // Temperature sensor
+//Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13); // Temperature sensor
 
 const byte START_BYTE = 0x02;  // Byte de inicio (STX)
 const byte END_BYTE = 0x03;    // Byte de término (ETX)
