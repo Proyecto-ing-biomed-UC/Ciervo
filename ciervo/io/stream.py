@@ -11,25 +11,14 @@ import glob
 from pprint import pprint
 from ciervo.aux_tools import Buffer
 import numpy as np
-from ciervo.procesamiento import ButterBandpassFilter, NotchFilter, ButterLowpassFilter
 from time import sleep
+
+# Import SciPy signal processing functions
+from scipy.signal import iirnotch, butter, sosfilt, tf2sos
 
 def create_channel_setting_command(channel, power_down, gain_set, input_type_set, bias_set, srb2_set, srb1_set, daisy_module=False):
     """
     Generate the channel setting command string.
-
-    Parameters:
-    channel (int): Channel number (1-8 for main board, 9-16 for daisy module).
-    power_down (int): 0 = ON, 1 = OFF.
-    gain_set (int): 0 = Gain 1, 1 = Gain 2, ..., 6 = Gain 24.
-    input_type_set (int): 0 = Normal, 1 = Shorted, ..., 7 = Bias DrN.
-    bias_set (int): 0 = Remove from BIAS, 1 = Include in BIAS.
-    srb2_set (int): 0 = Disconnect from SRB2, 1 = Connect to SRB2.
-    srb1_set (int): 0 = Disconnect from SRB1, 1 = Connect to SRB1.
-    daisy_module (bool): True if using Daisy module (channels 9-16).
-
-    Returns:
-    str: Command string to set the channel settings.
     """
     if not (1 <= channel <= 16):
         raise ValueError("Channel must be between 1 and 16.")
@@ -42,24 +31,15 @@ def create_channel_setting_command(channel, power_down, gain_set, input_type_set
 
     # Construct the command string
     command = f"x{channel_str}{power_down}{gain_set}{input_type_set}{bias_set}{srb2_set}{srb1_set}x"
-    
+
     return command
 
-
-
-
 def find_openbci():
-    """ Lists serial port names
-
-        :raises EnvironmentError:
-            On unsupported or unknown platforms
-        :returns:
-            A list of the serial ports available on the system
-    """
+    """ Lists serial port names """
     if sys.platform.startswith('win'):
         ports = ['COM%s' % (i + 1) for i in range(256)]
     elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
-        # this excludes your current terminal "/dev/tty"
+        # Exclude current terminal "/dev/tty"
         ports = glob.glob('/dev/tty[A-Za-z]*')
     elif sys.platform.startswith('darwin'):
         ports = glob.glob('/dev/tty.*')
@@ -74,9 +54,9 @@ def find_openbci():
             result.append(port)
         except (OSError, serial.SerialException):
             pass
-    
+
     open_bci_ports = [port for port in result if 'usb' in port.lower()]
-    
+
     assert len(open_bci_ports) > 0, 'No se encontraron dispositivos OpenBCI'
     assert len(open_bci_ports) == 1, 'Se encontraron varios dispositivos OpenBCI'
 
@@ -96,16 +76,38 @@ class Publish:
 
         self.marker = -1
         self.buffer = Buffer(self.window_size, roll=True)
-        self.band_pass_filter = ButterBandpassFilter(60, 120, fs=self.sampling_rate, order=2)
-        self.high_pass_filter = ButterLowpassFilter(2, fs=self.sampling_rate, order=2)
-        self.notch = NotchFilter(50, fs=self.sampling_rate)
 
+
+        # Initialize filters using SciPy
+        self.mains = 50  # Notch filter frequency (Hz)
+        self.band_low = 0.5  # Lower cutoff frequency for band-pass filter (Hz)
+        self.band_high = 50  # Upper cutoff frequency for band-pass filter (Hz)
+
+        # Design notch filter
+        b_notch, a_notch = iirnotch(w0=self.mains / (self.sampling_rate / 2), Q=30)
+        self.sos_notch = tf2sos(b_notch, a_notch)
+
+        # Design band-pass filter
+        self.sos_bp = butter(
+            N=4,
+            Wn=[self.band_low / (self.sampling_rate / 2), self.band_high / (self.sampling_rate / 2)],
+            btype='bandpass',
+            output='sos'
+        )
+
+        # Initialize filter states for each EEG channel
+        self.num_eeg_channels = len(self.exg_channels)
+        self.zi_bp = []
+        self.zi_notch = []
+        for _ in range(self.num_eeg_channels):
+            self.zi_bp.append(np.zeros((self.sos_bp.shape[0], 2)))
+            self.zi_notch.append(np.zeros((self.sos_notch.shape[0], 2)))
 
         # MQTT
         self.broker = p.BROKER_HOST
         self.port = p.BROKER_PORT
         self.topic = 'data'
-        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, 'openbci')
+        self.client = mqtt_client.Client(client_id='openbci')
         self.client.on_connect = on_connect
         self.client.on_message = self.on_message
 
@@ -123,40 +125,52 @@ class Publish:
     def update(self):
         start_time = None
         while True:
-            time.sleep(2/self.sampling_rate)  # Esperar al menos 2 muestras
+            time.sleep(2 / self.sampling_rate)  # Wait for at least 2 samples
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
             if data.shape[1] == 0:
                 continue
 
             if start_time is None:
                 start_time = data[p.TIME_CHANNEL, 0]
-            data[p.TIME_CHANNEL ,:] -=  start_time
+            data[p.TIME_CHANNEL, :] -= start_time
 
             if self.marker != -1:
                 data[p.MARKER_CHANNEL, :] = self.marker
             data = data[p.ALL_CHANNELS, :]
+
+            # Apply filters to EEG channels
+            for idx, channel in enumerate(range(8)):
+                # Get data for this channel
+                channel_data = data[channel, :] - 2250
+
+                # Apply the band-pass filter with state
+                filtered_bp, self.zi_bp[idx] = sosfilt(
+                    self.sos_bp, channel_data, zi=self.zi_bp[idx]
+                )
+
+                # Apply the notch filter with state
+                filtered_data, self.zi_notch[idx] = sosfilt(
+                    self.sos_notch, filtered_bp, zi=self.zi_notch[idx]
+                )
+
+                # Assign filtered data back to data array
+                data[channel, :] = filtered_data
+
+            # Convert data to desired precision and publish
             data = data.astype(p.PRECISION)
-
-
             data_bytes = data.tobytes()
-
 
             self.client.publish(self.topic, data_bytes, qos=0)
 
-def on_connect(client, userdata, flags, rc, properties):
+def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
-
-
-
-
-
 
 def main():
     BoardShim.enable_dev_board_logger()
     logging.basicConfig(level=logging.DEBUG)
 
     parser = argparse.ArgumentParser()
-    # use docs to check which parameters are required for specific board, e.g. for Cyton - set serial port
+    # Use docs to check which parameters are required for specific board, e.g., for Cyton - set serial port
     parser.add_argument('--timeout', type=int, help='timeout for device discovery or connection', required=False,
                         default=0)
     parser.add_argument('--ip-port', type=int, help='ip port', required=False, default=0)
@@ -188,12 +202,11 @@ def main():
     params.ip_address_aux = "225.1.1.2"
     params.ip_port_aux = 6678
 
-
     board_shim = BoardShim(args.board_id, params)
 
     try:
         board_shim.prepare_session()
-        # Configure openbci 
+        # Configure OpenBCI
         # x (CHANNEL, POWER_DOWN, GAIN_SET, INPUT_TYPE_SET, BIAS_SET, SRB2_SET, SRB1_SET) X
 
         for i in range(1, 4):
@@ -208,11 +221,8 @@ def main():
             board_shim.config_board(ch)
             sleep(0.1)
 
-
-
-
         board_shim.add_streamer(args.streamer_params)
-        board_shim.start_stream(250*10)
+        board_shim.start_stream(250 * 10)
         Publish(board_shim)
     except BaseException:
         logging.warning('Exception', exc_info=True)
@@ -222,12 +232,8 @@ def main():
             logging.info('Releasing session')
             board_shim.release_session()
 
-
 if __name__ == '__main__':
-    
     board_id = BoardIds.CYTON_BOARD.value
     pprint(BoardShim.get_board_descr(board_id))
 
-
-    main() 
-
+    main()
