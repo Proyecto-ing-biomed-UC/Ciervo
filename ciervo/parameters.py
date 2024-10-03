@@ -1,7 +1,7 @@
 import numpy as np
 
 # MQTT params
-BROKER_HOST = 'nanomq'
+BROKER_HOST = '127.0.0.1'
 URL_INFLUXDB = 'http://100.90.57.1:8086'
 BROKER_PORT = 1883
 PRECISION = np.float32

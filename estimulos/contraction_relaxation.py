@@ -26,8 +26,12 @@ for i in range(4, 0, -1):
     sleep(1)
 
 
-for _ in range(repetitions):
-    message = random.randint(1,2)
+for idx in range(repetitions):
+
+    if idx % 2 == 0:
+        message = 1
+    else:
+        message = 2 
 
     client.publish(topic, message)
     os.system('clear')

@@ -80,8 +80,8 @@ class Publish:
 
         # Initialize filters using SciPy
         self.mains = 50  # Notch filter frequency (Hz)
-        self.band_low = 0.5  # Lower cutoff frequency for band-pass filter (Hz)
-        self.band_high = 50  # Upper cutoff frequency for band-pass filter (Hz)
+        self.band_low = 2  # Lower cutoff frequency for band-pass filter (Hz)
+        self.band_high = 100  # Upper cutoff frequency for band-pass filter (Hz)
 
         # Design notch filter
         b_notch, a_notch = iirnotch(w0=self.mains / (self.sampling_rate / 2), Q=30)
@@ -107,7 +107,7 @@ class Publish:
         self.broker = p.BROKER_HOST
         self.port = p.BROKER_PORT
         self.topic = 'data'
-        self.client = mqtt_client.Client(client_id='openbci')
+        self.client = mqtt_client.Client(mqtt_client.CallbackAPIVersion.VERSION2, client_id='openbci')
         self.client.on_connect = on_connect
         self.client.on_message = self.on_message
 
@@ -162,7 +162,7 @@ class Publish:
 
             self.client.publish(self.topic, data_bytes, qos=0)
 
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, properties):
     print(f"Connected with result code {rc}")
 
 def main():
