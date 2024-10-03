@@ -52,6 +52,9 @@ class Graph:
             po.showAxis('left', False)
             po.setMenuEnabled('left', False)
 
+            if 'C' in p.CH_NAMES[i]:
+                po.setYRange(-50, 50)
+
             # Add time axis to the last plot
             if i == p.NUM_CHANNELS - 1:
                 po.showAxis('bottom', True)
