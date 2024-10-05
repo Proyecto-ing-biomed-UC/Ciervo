@@ -93,8 +93,8 @@ class RealTimeInference:
     
     @angle.setter
     def angle(self, value):
-        # min 0, max 180
-        self._angle = np.clip(value, 0, 180)
+        # min 90, max 180
+        self._angle = np.clip(value, 90, 180)
 
     def on_message(self, client, userdata, msg):
         # Actualizar buffer
@@ -153,5 +153,5 @@ if __name__ == '__main__':
     RealTimeInference(
         emg_prepro=features_v1, 
         emg_model='model.pkl',
-        serial_send=False,
+        serial_send=True,
         )
