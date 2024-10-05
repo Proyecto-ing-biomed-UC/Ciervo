@@ -45,7 +45,7 @@ class RealTimeInference:
                  emg_model=None, 
                  emg_idx=[0, 1, 2, 3],
                  acc_idx=[8, 9, 10],
-                 serial_send=False,
+                 serial_send=True,
                  ):
         self.update_speed = 1/50 # seconds
         self.window = window  # seconds
