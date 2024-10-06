@@ -22,19 +22,25 @@ END_BYTE = b'\x03'    # Byte de término (0x03 = ETX en ASCII)
 class SendAngleSerial:
 
     def __init__(self):
-        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # Reemplaza 'COM3' por tu puerto serial
+        self.ser = serial.Serial('/dev/ttyACM0',
+                                 baudrate=9600,
+                                 bytesize=serial.EIGHTBITS,
+                                 parity=serial.PARITY_NONE,
+                                 stopbits=serial.STOPBITS_ONE,
+                                 timeout=1)
         time.sleep(2)
 
     def send_float_via_serial(self, value):
-        # Convertir el número float a 4 bytes usando formato 'f' de struct
-        float_bytes = struct.pack('f', value)
-        
-        # Construir el mensaje: [START_BYTE] + [FLOAT_BYTES] + [END_BYTE]
-        message = START_BYTE + float_bytes + END_BYTE
-        
-        # Enviar el mensaje a través del puerto serial
-        self.ser.write(message)
-        print(f"Enviado: {value}")# como mensaje: {message}")
+        # Send int
+        int_value = int(value)
+        if 0 <= int_value <= 255:
+            self.ser.write(bytes([int_value]))
+        else:
+            if int_value > 255:
+                self.ser.write(bytes([255]))
+            
+            elif int_value < 0:
+                self.ser.write(bytes([0]))
 
 
 
