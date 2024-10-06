@@ -49,7 +49,7 @@ class RealTimeInference:
                  acc_idx=[8, 9, 10],
                  serial_send=True,
                  ):
-        self.update_speed = 1/50 # seconds
+        self.update_speed = 1/10 # seconds
         self.window = window  # seconds
         self.angle_speed = 5 # degrees per second
         self.serial_send = serial_send
@@ -96,7 +96,7 @@ class RealTimeInference:
     @angle.setter
     def angle(self, value):
         # min 90, max 180
-        self._angle = np.clip(value, 90, 180)
+        self._angle = np.clip(value, 110, 160)
 
     def on_message(self, client, userdata, msg):
         # Actualizar buffer
@@ -120,12 +120,12 @@ class RealTimeInference:
             if self.emg_model is not None:
     
                 prediction = self.emg_model.predict(features)[0]
-                
+                print("prediccion", prediction)
                 # Update angle
                 if prediction == 1:
-                    self.angle +=  8
+                    self.angle +=  1
                 else:
-                    self.angle -=  8
+                    self.angle -=  1
 
                 # Send angle
                 if self.serial_send:

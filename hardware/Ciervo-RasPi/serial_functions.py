@@ -46,7 +46,7 @@ if __name__ == '__main__':
                          timeout=1)
         time.sleep(2)
 
-        frequency = 10000 # Hz
+        frequency = 10 # Hz
 
         thread = Thread(target = read_byte_loop, args=(serial_port,))
         thread.start()
