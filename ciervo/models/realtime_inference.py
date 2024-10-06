@@ -15,10 +15,6 @@ port = 1883
 topic = "data"
 
 
-# Definir bytes especiales para inicio y término del mensaje
-START_BYTE = b'\x02'  # Byte de inicio (0x02 = STX en ASCII)
-END_BYTE = b'\x03'    # Byte de término (0x03 = ETX en ASCII)
-
 class SendAngleSerial:
 
     def __init__(self):
