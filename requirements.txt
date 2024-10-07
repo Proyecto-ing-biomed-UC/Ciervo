@@ -8,3 +8,4 @@ influxdb-client
 brainflow
 lightning
 pandas
+pyqtgraph==0.12.4
