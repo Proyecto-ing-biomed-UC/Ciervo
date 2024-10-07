@@ -16,7 +16,7 @@ from sklearn.metrics import accuracy_score
 
 if __name__ == "__main__":
     # cargar data
-    data = np.load('recordings/parado1.npy')
+    data = np.load('recordings/casacarlos1.npy')
 
     n_points = data.shape[1]
     print(f"Tiempo de grabación: {n_points/250} s")

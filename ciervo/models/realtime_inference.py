@@ -15,26 +15,28 @@ port = 1883
 topic = "data"
 
 
-# Definir bytes especiales para inicio y término del mensaje
-START_BYTE = b'\x02'  # Byte de inicio (0x02 = STX en ASCII)
-END_BYTE = b'\x03'    # Byte de término (0x03 = ETX en ASCII)
-
 class SendAngleSerial:
 
     def __init__(self):
-        self.ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)  # Reemplaza 'COM3' por tu puerto serial
+        self.ser = serial.Serial('/dev/ttyACM0',
+                                 baudrate=9600,
+                                 bytesize=serial.EIGHTBITS,
+                                 parity=serial.PARITY_NONE,
+                                 stopbits=serial.STOPBITS_ONE,
+                                 timeout=1)
         time.sleep(2)
 
     def send_float_via_serial(self, value):
-        # Convertir el número float a 4 bytes usando formato 'f' de struct
-        float_bytes = struct.pack('f', value)
-        
-        # Construir el mensaje: [START_BYTE] + [FLOAT_BYTES] + [END_BYTE]
-        message = START_BYTE + float_bytes + END_BYTE
-        
-        # Enviar el mensaje a través del puerto serial
-        self.ser.write(message)
-        print(f"Enviado: {value}")# como mensaje: {message}")
+        # Send int
+        int_value = int(value)
+        if 0 <= int_value <= 255:
+            self.ser.write(bytes([int_value]))
+        else:
+            if int_value > 255:
+                self.ser.write(bytes([255]))
+            
+            elif int_value < 0:
+                self.ser.write(bytes([0]))
 
 
 
@@ -45,7 +47,7 @@ class RealTimeInference:
                  emg_model=None, 
                  emg_idx=[0, 1, 2, 3],
                  acc_idx=[8, 9, 10],
-                 serial_send=False,
+                 serial_send=True,
                  ):
         self.update_speed = 1/10 # seconds
         self.window = window  # seconds
@@ -93,8 +95,8 @@ class RealTimeInference:
     
     @angle.setter
     def angle(self, value):
-        # min 0, max 180
-        self._angle = value % 180
+        # min 90, max 180
+        self._angle = np.clip(value, 110, 160)
 
     def on_message(self, client, userdata, msg):
         # Actualizar buffer
@@ -118,18 +120,19 @@ class RealTimeInference:
             if self.emg_model is not None:
     
                 prediction = self.emg_model.predict(features)[0]
-                
+                print("prediccion", prediction)
                 # Update angle
                 if prediction == 1:
-                    self.angle +=  np.random.randint(-10, 10)
+                    self.angle +=  1
                 else:
-                    self.angle -=  np.random.randint(-10, 10)
+                    self.angle -=  1
 
                 # Send angle
                 if self.serial_send:
                     self.serial.send_float_via_serial(self.angle)
 
-                self.client.publish('marker', self.angle, qos=0)
+                self.client.publish('marker', int(self._angle), qos=0)
+                print(self.angle)
 
 
 
@@ -152,5 +155,5 @@ if __name__ == '__main__':
     RealTimeInference(
         emg_prepro=features_v1, 
         emg_model='model.pkl',
-        serial_send=False,
+        serial_send=True,
         )
