@@ -24,7 +24,7 @@ class SendAngleSerial:
                                  parity=serial.PARITY_NONE,
                                  stopbits=serial.STOPBITS_ONE,
                                  timeout=1)
-        time.sleep(2)
+        time.sleep(1)
 
     def send_float_via_serial(self, value):
         # Send int
@@ -43,4 +43,5 @@ class SendAngleSerial:
 if __name__ == '__main__':
 
     send = SendAngleSerial()
+    print("Enviado")
     send.send_float_via_serial(180)
