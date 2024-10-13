@@ -9,7 +9,7 @@ from ciervo.aux_tools import Buffer
 import argparse
 
 
-broker = p.BROKER_HOST
+broker = '192.168.0.101'
 port = 1883
 topic = "data"
 
@@ -55,6 +55,18 @@ class Graph:
             if 'C' in p.CH_NAMES[i]:
                 po.setYRange(-50, 50)
 
+            if 'MARKERS' in p.CH_NAMES[i]:
+                po.setYRange(90, 180)
+
+            if 'AX' in p.CH_NAMES[i]:
+                po.setYRange(-1, 1)
+
+            if 'AY' in p.CH_NAMES[i]:
+                po.setYRange(-1, 1)
+
+            if 'AZ' in p.CH_NAMES[i]:
+                po.setYRange(-1, 1)
+
             # Add time axis to the last plot
             if i == p.NUM_CHANNELS - 1:
                 po.showAxis('bottom', True)
@@ -76,6 +88,8 @@ class Graph:
         data = np.frombuffer(msg.payload, dtype=p.PRECISION)
         data = data.reshape(p.NUM_CHANNELS, -1)
         self.buffer.data = data
+
+        #print(self.buffer.data.shape)
 
     def update(self):
         data = self.buffer.data
