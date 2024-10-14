@@ -165,7 +165,7 @@ class RealTimeInference:
 
                 # Send angle
                 if self.serial_send:
-                    self.serial.send_float_via_serial(self.angle)
+                    self.serial.send_byte(self.angle)
 
                 self.client.publish('marker', int(self._angle), qos=0)
                 #print(self.angle)
