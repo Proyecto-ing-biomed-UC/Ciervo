@@ -92,9 +92,11 @@ void loop() {
 
     Setpoint = (double)receivedByte;
 
-    Serial.println(receivedByte);
+    //Serial.println(receivedByte);
   
   }
+
+  Serial.println((int)Input);
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
           myACE.setMpos(0);               // set logical multiturn zero to current position
