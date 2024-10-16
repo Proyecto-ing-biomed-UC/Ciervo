@@ -57,13 +57,16 @@ if __name__ == '__main__':
     try:
         port_names = {
             'WINDOWS'   :   'COM13',
-            'LINUX'     :   '/dev/ttyACM0'
+            'LINUX'     :   '/dev/ttyACM0',
+            'RASPI_USB' :   '/dev/ttyACM0',
+            'RASPI_UART':   '/dev/ttyS0'
             }
         
         port = 'LINUX'
+        baudrate = 9600
 
         serial_port = serial.Serial(port=port_names[port],
-                         baudrate=9600,
+                         baudrate=baudrate,
                          bytesize=serial.EIGHTBITS,
                          parity=serial.PARITY_NONE,
                          stopbits=serial.STOPBITS_ONE,

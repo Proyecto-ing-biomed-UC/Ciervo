@@ -71,7 +71,7 @@ void setup() {
   setup_motor();
   setup_pid();
   setup_encoder();
-  
+
   //  Assuming the limit switch is in pullup configuration
   pinMode(MIN_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
   pinMode(MAX_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);

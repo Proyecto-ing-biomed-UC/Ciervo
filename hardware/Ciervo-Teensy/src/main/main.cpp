@@ -1,18 +1,6 @@
 #include <Arduino.h>
 #include <PID_v1.h>
 
-#define PID_INPUT 41
-#define PID_OUTPUT 3
-
-#define LPWM_PIN 22
-#define RPWM_PIN 15
-
-#define MIN_ANGLE_SETPOINT 95
-#define MAX_ANGLE_SETPOINT 175
-
-#define MIN_ANGLE_LIMIT_SWITCH 34
-#define MAX_ANGLE_LIMIT_SWITCH 35
-
 #define ACE_ADDR 0x20
 #include <ACE128.h>
 #include <ACE128map87654321.h>
@@ -24,28 +12,49 @@
   #define ACE_PROBE_ADDR ACE_ADDR
 #endif
 
+#define PID_INPUT 41
+#define PID_OUTPUT 3
+
+#define LPWM_PIN 22
+#define RPWM_PIN 15
+
+#define MIN_ANGLE 95
+#define MAX_ANGLE 175
+
+#define MIN_ANGLE_LIMIT_SWITCH 28     // Not definitive yet
+#define MAX_ANGLE_LIMIT_SWITCH 29     //
+
+
+
+//    Serial Configuration
+#define SERIAL_BAUD 9600
+
+#define TIMEOUT 1000
+
+//#define USE_UART                    //Uncomment to use
+
+#define ECHO_MODE                   //Uncomment to use
+
+#ifdef USE_UART
+    #define SERIAL_PORT Serial8
+#else
+    #define SERIAL_PORT Serial
+#endif
+
+unsigned long lastReceiveTime = 0; 
+
 ACE128 myACE(ACE_ADDR, (uint8_t*)encoderMap_87654321); // I2C without using EEPROM
 //Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13); // Temperature sensor
-
-const byte START_BYTE = 0x02;  // Byte de inicio (STX)
-const byte END_BYTE = 0x03;    // Byte de término (ETX)
-
-// Buffer para almacenar los bytes recibidos
-byte buffer[4];  // 4 bytes para almacenar el float
-int bufferIndex = 0;
-bool receiving = false;  // Estado para saber si estamos recibiendo un mensaje
 
 // Variable donde se almacenará el valor float
 float value = 0.0;
 
 const int ZERO = 16;  // Original = 13, cambiado por coflicto con pines SPI
+
 uint8_t pinPos = 0; // pin values
 uint8_t rawPos = 0;
-uint8_t upos = 0;
 uint8_t oldPos = 255;
-int8_t pos;
 int16_t mpos;
-uint8_t seen = 0;
 
 //Define Variables we'll be connecting to
 double Setpoint, Input, Output;
@@ -67,11 +76,11 @@ void setup_pid(void);
 void setup_encoder(void);
 
 void setup() {
-  Serial.begin(9600);
+  SERIAL_PORT.begin(SERIAL_BAUD);
   setup_motor();
   setup_pid();
   setup_encoder();
-  
+
   //  Assuming the limit switch is in pullup configuration
   pinMode(MIN_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
   pinMode(MAX_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
@@ -83,20 +92,26 @@ void loop() {
 
     // Limit angle setpoint range
     // Comment to remove limit
-    if (receivedByte > MAX_ANGLE_SETPOINT){
-      receivedByte = MAX_ANGLE_SETPOINT;
+    if (receivedByte > MAX_ANGLE){
+      receivedByte = MAX_ANGLE;
     }
-    else if (receivedByte < MIN_ANGLE_SETPOINT){
-      receivedByte = MIN_ANGLE_SETPOINT;
+    else if (receivedByte < MIN_ANGLE){
+      receivedByte = MIN_ANGLE;
     }
 
     Setpoint = (double)receivedByte;
 
-    //Serial.println(receivedByte);
+    lastReceiveTime = millis();
   
   }
 
-  Serial.println((int)Input);
+  #ifdef ECHO_MODE
+    SERIAL_PORT.println((int)Input);
+  #endif
+
+  if (millis() - lastReceiveTime > TIMEOUT) {
+    Setpoint = (double)MAX_ANGLE;
+  }
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
           myACE.setMpos(0);               // set logical multiturn zero to current position
@@ -105,14 +120,6 @@ void loop() {
 
   pinPos = myACE.acePins();          // get IO expander pins - this is for debug
   rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
-
-  //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
-  //
-  //pos = myACE.pos();                 // get logical position - signed -64 to +63
-  //upos = myACE.upos();               // get logical position - unsigned 0 to +127
-  //mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
-  //
-  //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
 
   int min_switch_val = digitalRead(MIN_ANGLE_LIMIT_SWITCH);
   int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
@@ -135,8 +142,6 @@ void loop() {
 
     send_pid_value_to_motor(Output);
   }
-
-  
 }
 
 void send_pid_value_to_motor(double pid_value){
