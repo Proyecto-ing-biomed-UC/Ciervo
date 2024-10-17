@@ -48,21 +48,13 @@ def features_v1(data, divide=3, fs=250):
         # Frequency domain features
         feature_names.extend([f"median_freq_channel_{c}", f"mean_freq_channel_{c}", f"peak_freq_channel_{c}"])
 
-        # Segment features
-        for i in range(divide):
-            start, end = i * segment_size, (i + 1) * segment_size
-            segment_env = env[start:end]
 
-            mean_env = np.mean(segment_env)
-            std_env = np.std(segment_env)
-            max_env = np.max(segment_env)
-            min_env = np.min(segment_env)
+        mean_env = np.mean(env)
+        std_env = np.std(env)
+        max_env = np.max(env)
+        min_env = np.min(env)
 
-            result.extend([mean_env, std_env, max_env, min_env])
-            feature_names.extend([
-                f"mean_env_segment_{i}_channel_{c}", f"std_env_segment_{i}_channel_{c}",
-                f"max_env_segment_{i}_channel_{c}", f"min_env_segment_{i}_channel_{c}"
-            ])
+        result.extend([mean_env, std_env, max_env, min_env])
 
     return np.array(result), feature_names
 

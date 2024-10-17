@@ -9,7 +9,7 @@ import os; os.system('clear')
 broker_address = "127.0.0.1"  # Replace with your broker's address
 broker_port = 1883  # Default MQTT port is 1883
 topic = "marker"
-repetitions = 30
+repetitions = 20
 
 # Create a client instance
 client = mqtt.Client(mqtt_client.CallbackAPIVersion.VERSION2)

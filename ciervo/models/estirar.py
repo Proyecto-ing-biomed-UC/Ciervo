@@ -44,4 +44,4 @@ if __name__ == '__main__':
 
     send = SendAngleSerial()
     print("Enviado")
-    send.send_float_via_serial(180)
+    send.send_float_via_serial(90)

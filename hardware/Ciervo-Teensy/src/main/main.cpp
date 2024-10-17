@@ -125,7 +125,7 @@ void loop() {
   int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
 
 
-  if (min_switch_val == HIGH || max_switch_val == HIGH){
+/*  if (min_switch_val == HIGH || max_switch_val == HIGH){
     if (min_switch_val == HIGH ){
       send_pid_value_to_motor(255);
     }
@@ -135,14 +135,14 @@ void loop() {
     }
   }
 
-  else {
-    Input = map(rawPos, 0, 127, 0, 360);
+  else {*/
+    Input = 360 - (171 + map(rawPos, 0, 127, 0, 360));
 
     myPID.Compute();
 
     send_pid_value_to_motor(Output);
   }
-}
+//}
 
 void send_pid_value_to_motor(double pid_value){
 

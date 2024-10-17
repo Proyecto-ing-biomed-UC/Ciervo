@@ -132,7 +132,7 @@ class RealTimeInference:
     @angle.setter
     def angle(self, value):
         # min 90, max 180
-        self._angle = np.clip(value, 90, 180)
+        self._angle = np.clip(value, 90, 175)
 
     def on_message(self, client, userdata, msg):
         # Actualizar buffer
@@ -158,9 +158,9 @@ class RealTimeInference:
                 prediction = self.emg_model.predict(features)[0]
                 #print("prediccion", prediction)
                 # Update angle
-                if prediction == 1:
+                if prediction == 1: #activa
                     self.angle +=  10
-                else:
+                else: 
                     self.angle =  90
 
                 # Send angle
