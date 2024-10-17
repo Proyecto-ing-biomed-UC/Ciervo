@@ -51,7 +51,7 @@ uint8_t seen = 0;
 double Setpoint, Input, Output;
 
 //Specify the links and initial tuning parameters
-double Kp=3, Ki=0, Kd=0;
+double Kp=6, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 float angle_setpoint;
@@ -92,9 +92,11 @@ void loop() {
 
     Setpoint = (double)receivedByte;
 
-    Serial.println(receivedByte);
+    //Serial.println(receivedByte);
   
   }
+
+  Serial.println((int)Input);
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
           myACE.setMpos(0);               // set logical multiturn zero to current position
