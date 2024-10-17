@@ -9,7 +9,7 @@ import os; os.system('clear')
 broker_address = "127.0.0.1"  # Replace with your broker's address
 broker_port = 1883  # Default MQTT port is 1883
 topic = "marker"
-repetitions = 120
+repetitions = 60
 
 # Create a client instance
 client = mqtt.Client(mqtt_client.CallbackAPIVersion.VERSION2)
@@ -25,6 +25,7 @@ for i in range(4, 0, -1):
     print(i)
     sleep(1)
 
+duration = 3
 
 for idx in range(repetitions):
 
@@ -36,10 +37,14 @@ for idx in range(repetitions):
     client.publish(topic, message)
     os.system('clear')
     if message == 1:
-        print(f"Relaja!")
+        task = "Relaja!"
     else:
-        print(f"Contrae!")
-    sleep(2)
+        task = "Contrae!"
+
+    for i in range(duration):
+        print(f"{duration -i -1} {task}")
+        sleep(1)
+        os.system('clear')
 
 
 client.publish(topic, 0)
