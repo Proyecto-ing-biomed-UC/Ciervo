@@ -85,7 +85,7 @@ class RealTimeInference:
                  acc_idx=[8, 9, 10],
                  serial_send=True,
                  ):
-        self.update_speed = 1/10 # seconds
+        self.update_speed = 1/5 # seconds
         self.window = window  # seconds
         self.angle_speed = 5 # degrees per second
         self.serial_send = serial_send
@@ -159,7 +159,7 @@ class RealTimeInference:
                 #print("prediccion", prediction)
                 # Update angle
                 if prediction == 1: #activa
-                    self.angle +=  10
+                    self.angle +=  30
                 else: 
                     self.angle =  90
 

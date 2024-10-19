@@ -227,7 +227,7 @@ def main():
         # Configure OpenBCI
         # x (CHANNEL, POWER_DOWN, GAIN_SET, INPUT_TYPE_SET, BIAS_SET, SRB2_SET, SRB1_SET) X
 
-        for i in range(1, 4):
+        for i in range(1, 5):
             ch = create_channel_setting_command(channel=i,
                                                 power_down=0,
                                                 gain_set=6,
