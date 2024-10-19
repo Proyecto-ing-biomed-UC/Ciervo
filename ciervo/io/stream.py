@@ -56,6 +56,8 @@ def find_openbci():
             pass
 
     open_bci_ports = [port for port in result if 'usb' in port.lower()]
+    #print(open_bci_ports)
+    #open_bci_ports = ['/dev/ttyAMA1']
 
     assert len(open_bci_ports) > 0, 'No se encontraron dispositivos OpenBCI'
     assert len(open_bci_ports) == 1, 'Se encontraron varios dispositivos OpenBCI'
@@ -80,8 +82,8 @@ class Publish:
 
         # Initialize filters using SciPy
         self.mains = 50  # Notch filter frequency (Hz)
-        self.band_low = 2  # Lower cutoff frequency for band-pass filter (Hz)
-        self.band_high = 100  # Upper cutoff frequency for band-pass filter (Hz)
+        self.band_low = 20  # Lower cutoff frequency for band-pass filter (Hz)
+        self.band_high = 120  # Upper cutoff frequency for band-pass filter (Hz)
 
         # Design notch filter
         b_notch, a_notch = iirnotch(w0=self.mains / (self.sampling_rate / 2), Q=30)
@@ -123,9 +125,10 @@ class Publish:
         self.marker = int(msg.payload.decode('utf-8'))
 
     def update(self):
+        target_set = set(list(range(256)))
         start_time = None
         while True:
-            time.sleep(2 / self.sampling_rate)  # Wait for at least 2 samples
+            time.sleep(8 / self.sampling_rate)  # Wait for at least 2 samples
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
             if data.shape[1] == 0:
                 continue
@@ -159,6 +162,21 @@ class Publish:
             # Convert data to desired precision and publish
             data = data.astype(p.PRECISION)
             data_bytes = data.tobytes()
+
+            
+            obtain_set = set(data[12, :])
+
+            if not obtain_set.issubset(target_set):
+                print("Reiniciando")
+                self.board_shim.release_session()
+                self.board_shim.prepare_session()
+                self.board_shim.start_stream()
+
+
+
+            
+            
+             
 
             self.client.publish(self.topic, data_bytes, qos=0)
 
@@ -199,8 +217,8 @@ def main():
     params.timeout = args.timeout
     params.file = args.file
     params.master_board = args.master_board
-    params.ip_address_aux = "225.1.1.2"
-    params.ip_port_aux = 6678
+    #params.ip_address_aux = "225.1.1.2"
+    #params.ip_port_aux = 6678
 
     board_shim = BoardShim(args.board_id, params)
 
@@ -221,8 +239,8 @@ def main():
             board_shim.config_board(ch)
             sleep(0.1)
 
-        board_shim.add_streamer(args.streamer_params)
-        board_shim.start_stream(250 * 10)
+        #board_shim.add_streamer(args.streamer_params)
+        board_shim.start_stream()
         Publish(board_shim)
     except BaseException:
         logging.warning('Exception', exc_info=True)

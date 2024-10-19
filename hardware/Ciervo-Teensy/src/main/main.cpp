@@ -1,15 +1,10 @@
 #include <Arduino.h>
 #include <PID_v1.h>
 
-#define PID_INPUT 41
-#define PID_OUTPUT 3
-
-#define LPWM_PIN 15
-#define RPWM_PIN 14
-
 #define ACE_ADDR 0x20
 #include <ACE128.h>
 #include <ACE128map87654321.h>
+//#include <Adafruit_MAX31865.h>
 
 #ifdef ACE128_MCP23008
   #define ACE_PROBE_ADDR ACE_ADDR | 0x20
@@ -17,22 +12,55 @@
   #define ACE_PROBE_ADDR ACE_ADDR
 #endif
 
-ACE128 myACE(ACE_ADDR, (uint8_t*)encoderMap_87654321); // I2C without using EEPROM
+#define PID_INPUT 41
+#define PID_OUTPUT 3
 
-const int ZERO = 13;
+#define LPWM_PIN 22
+#define RPWM_PIN 15
+
+#define MIN_ANGLE 95
+#define MAX_ANGLE 175
+
+#define MIN_ANGLE_LIMIT_SWITCH 28     // Not definitive yet
+#define MAX_ANGLE_LIMIT_SWITCH 29     //
+
+
+
+//    Serial Configuration
+#define SERIAL_BAUD 9600
+
+#define TIMEOUT 1000
+
+//#define USE_UART                    //Uncomment to use
+
+#define ECHO_MODE                   //Uncomment to use
+
+#ifdef USE_UART
+    #define SERIAL_PORT Serial8
+#else
+    #define SERIAL_PORT Serial
+#endif
+
+unsigned long lastReceiveTime = 0; 
+
+ACE128 myACE(ACE_ADDR, (uint8_t*)encoderMap_87654321); // I2C without using EEPROM
+//Adafruit_MAX31865 thermo = Adafruit_MAX31865(10, 11, 12, 13); // Temperature sensor
+
+// Variable donde se almacenará el valor float
+float value = 0.0;
+
+const int ZERO = 16;  // Original = 13, cambiado por coflicto con pines SPI
+
 uint8_t pinPos = 0; // pin values
 uint8_t rawPos = 0;
-uint8_t upos = 0;
 uint8_t oldPos = 255;
-int8_t pos;
 int16_t mpos;
-uint8_t seen = 0;
 
 //Define Variables we'll be connecting to
 double Setpoint, Input, Output;
 
 //Specify the links and initial tuning parameters
-double Kp=3, Ki=0, Kd=0;
+double Kp=6, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 float angle_setpoint;
@@ -48,79 +76,73 @@ void setup_pid(void);
 void setup_encoder(void);
 
 void setup() {
-  Serial.begin(9600);
+  SERIAL_PORT.begin(SERIAL_BAUD);
   setup_motor();
   setup_pid();
   setup_encoder();
+
+  //  Assuming the limit switch is in pullup configuration
+  pinMode(MIN_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
+  pinMode(MAX_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
 }
 
 void loop() {
-  if (Serial.available() >= 7) {  // Asegúrate de que hay al menos 7 bytes disponibles (2 bytes de header, 4 bytes de float, 1 byte de footer)
-    // Leer los 2 bytes de header
-    byte header1 = Serial.read();
-    byte header2 = Serial.read();
-    
-    // Verificar el header
-    if (header1 == 0xAA && header2 == 0xBB) {
-      // Leer el float
-      byte floatBytes[4];
-      for (int i = 0; i < 4; i++) {
-        floatBytes[i] = Serial.read();
-      }
-      
-      // Convertir los 4 bytes a un float
-      float valorRecibido;
-      memcpy(&valorRecibido, floatBytes, sizeof(valorRecibido));
-      
-      // Leer el byte de footer
-      byte footer = Serial.read();
-      
-      // Verificar el footer
-      if (footer == 0xCC) {
-        // Si el mensaje es válido, imprimir el valor float
-        //Serial.print("Valor recibido: ");
-        //Serial.println(valorRecibido);
+  if (Serial.available() > 0) {
+    int receivedByte = Serial.read();
 
-        Setpoint = valorRecibido;
-      } else {
-        Serial.println("Footer incorrecto");
-      }
-    } else {
-      Serial.println("Header incorrecto");
+    // Limit angle setpoint range
+    // Comment to remove limit
+    if (receivedByte > MAX_ANGLE){
+      receivedByte = MAX_ANGLE;
     }
+    else if (receivedByte < MIN_ANGLE){
+      receivedByte = MIN_ANGLE;
+    }
+
+    Setpoint = (double)receivedByte;
+
+    lastReceiveTime = millis();
+  
+  }
+
+  #ifdef ECHO_MODE
+    SERIAL_PORT.println((int)Input);
+  #endif
+
+  if (millis() - lastReceiveTime > TIMEOUT) {
+    Setpoint = (double)MAX_ANGLE;
   }
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
           myACE.setMpos(0);               // set logical multiturn zero to current position
           oldPos = 255;                   // force display update
-        }
+  }
 
-        pinPos = myACE.acePins();          // get IO expander pins - this is for debug
-        rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
-        pos = myACE.pos();                 // get logical position - signed -64 to +63
-        upos = myACE.upos();               // get logical position - unsigned 0 to +127
-        mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
+  pinPos = myACE.acePins();          // get IO expander pins - this is for debug
+  rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
 
-        Input = map(rawPos, 0, 127, 0, 360);
+  int min_switch_val = digitalRead(MIN_ANGLE_LIMIT_SWITCH);
+  int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
 
-        myPID.Compute();
-        send_pid_value_to_motor(Output);
 
-        // Carácter de inicio y término
-        char startChar = '<';
-        char endChar = '>';
+/*  if (min_switch_val == HIGH || max_switch_val == HIGH){
+    if (min_switch_val == HIGH ){
+      send_pid_value_to_motor(255);
+    }
 
-        // Enviar el carácter de inicio
-        Serial.write(startChar);
+    else if (max_switch_val == HIGH){
+      send_pid_value_to_motor(-255);
+    }
+  }
 
-        // Enviar los números como bytes
-        Serial.write((byte*)&Setpoint, sizeof(double));
-        Serial.write((byte*)&Input, sizeof(double));
-        Serial.write((byte*)&Output, sizeof(double));
+  else {*/
+    Input = 360 - (171 + map(rawPos, 0, 127, 0, 360));
 
-        // Enviar el carácter de término
-        Serial.write(endChar);
-}
+    myPID.Compute();
+
+    send_pid_value_to_motor(Output);
+  }
+//}
 
 void send_pid_value_to_motor(double pid_value){
 
@@ -152,8 +174,6 @@ void setup_motor(void){
 
 void setup_pid(void){
   //initialize the variables we're linked to
-  //Input = 110;
-  //Setpoint = 100;
 
   //turn the PID on
   myPID.SetMode(AUTOMATIC);

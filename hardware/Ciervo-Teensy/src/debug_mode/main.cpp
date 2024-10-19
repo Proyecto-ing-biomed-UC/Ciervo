@@ -7,6 +7,12 @@
 #define LPWM_PIN 22
 #define RPWM_PIN 15
 
+#define MIN_ANGLE_SETPOINT 95
+#define MAX_ANGLE_SETPOINT 175
+
+#define MIN_ANGLE_LIMIT_SWITCH 34
+#define MAX_ANGLE_LIMIT_SWITCH 35
+
 #define ACE_ADDR 0x20
 #include <ACE128.h>
 #include <ACE128map87654321.h>
@@ -45,7 +51,7 @@ uint8_t seen = 0;
 double Setpoint, Input, Output;
 
 //Specify the links and initial tuning parameters
-double Kp=3, Ki=0, Kd=0;
+double Kp=6, Ki=0, Kd=0;
 PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
 
 float angle_setpoint;
@@ -65,6 +71,10 @@ void setup() {
   setup_motor();
   setup_pid();
   setup_encoder();
+  
+  //  Assuming the limit switch is in pullup configuration
+  pinMode(MIN_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
+  pinMode(MAX_ANGLE_LIMIT_SWITCH, INPUT_PULLUP);
 }
 
 void loop() {
@@ -72,41 +82,61 @@ void loop() {
     int receivedByte = Serial.read();
 
     // Limit angle setpoint range
-    // Uncomment to remove limit
-    if (receivedByte > 175){
-      receivedByte = 175;
+    // Comment to remove limit
+    if (receivedByte > MAX_ANGLE_SETPOINT){
+      receivedByte = MAX_ANGLE_SETPOINT;
     }
-    else if (receivedByte < 95){
-      receivedByte = 95;
+    else if (receivedByte < MIN_ANGLE_SETPOINT){
+      receivedByte = MIN_ANGLE_SETPOINT;
     }
 
     Setpoint = (double)receivedByte;
 
-    Serial.println(receivedByte);
+    //Serial.println(receivedByte);
   
   }
+
+  Serial.println((int)Input);
 
   if (digitalRead(ZERO) == 0) {     // check set-zero button
           myACE.setMpos(0);               // set logical multiturn zero to current position
           oldPos = 255;                   // force display update
-        }
+  }
 
-        pinPos = myACE.acePins();          // get IO expander pins - this is for debug
-        rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
+  pinPos = myACE.acePins();          // get IO expander pins - this is for debug
+  rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
 
-        //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
-        //
-        //pos = myACE.pos();                 // get logical position - signed -64 to +63
-        //upos = myACE.upos();               // get logical position - unsigned 0 to +127
-        //mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
-        //
-        //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
+  //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
+  //
+  //pos = myACE.pos();                 // get logical position - signed -64 to +63
+  //upos = myACE.upos();               // get logical position - unsigned 0 to +127
+  //mpos = myACE.mpos();               // get multiturn position - signed -32768 to +32767
+  //
+  //  COMMENTED BECAUSE THIS VALUES ARE NOT BEING USED
 
-        Input = map(rawPos, 0, 127, 0, 360);
+  int min_switch_val = digitalRead(MIN_ANGLE_LIMIT_SWITCH);
+  int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
 
-        myPID.Compute();
-        
-        send_pid_value_to_motor(Output);
+
+  if (min_switch_val == HIGH || max_switch_val == HIGH){
+    if (min_switch_val == HIGH ){
+      send_pid_value_to_motor(255);
+    }
+
+    else if (max_switch_val == HIGH){
+      send_pid_value_to_motor(-255);
+    }
+  }
+
+  else {
+    Input = map(rawPos, 0, 127, 0, 360);
+
+    myPID.Compute();
+
+    send_pid_value_to_motor(Output);
+  }
+
+  
 }
 
 void send_pid_value_to_motor(double pid_value){
@@ -162,3 +192,4 @@ void setup_encoder(void){
 
   pinMode(ZERO, INPUT_PULLUP);    // configure set-zero button
 }
+
