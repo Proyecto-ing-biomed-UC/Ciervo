@@ -109,6 +109,8 @@ void loop() {
     SERIAL_PORT.println((int)Input);
   #endif
 
+  
+
   if (millis() - lastReceiveTime > TIMEOUT) {
     Setpoint = (double)MAX_ANGLE;
   }
@@ -121,28 +123,20 @@ void loop() {
   pinPos = myACE.acePins();          // get IO expander pins - this is for debug
   rawPos = myACE.rawPos();           // get raw mechanical position - this for debug
 
-  int min_switch_val = digitalRead(MIN_ANGLE_LIMIT_SWITCH);
-  int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
+  //int min_switch_val = digitalRead(MIN_ANGLE_LIMIT_SWITCH);
+  //int max_switch_val = digitalRead(MAX_ANGLE_LIMIT_SWITCH);
 
 
-/*  if (min_switch_val == HIGH || max_switch_val == HIGH){
-    if (min_switch_val == HIGH ){
-      send_pid_value_to_motor(255);
-    }
+  
 
-    else if (max_switch_val == HIGH){
-      send_pid_value_to_motor(-255);
-    }
-  }
-
-  else {*/
+  
     Input = 360 - (171 + map(rawPos, 0, 127, 0, 360));
 
     myPID.Compute();
 
     send_pid_value_to_motor(Output);
-  }
-//}
+  
+}
 
 void send_pid_value_to_motor(double pid_value){
 
@@ -197,4 +191,5 @@ void setup_encoder(void){
 
   pinMode(ZERO, INPUT_PULLUP);    // configure set-zero button
 }
+
 
