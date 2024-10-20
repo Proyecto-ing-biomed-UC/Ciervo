@@ -8,13 +8,19 @@ RUN apt-get update && \
     git \
     build-essential \
     cmake \
+    zip \
+    unzip \
     libboost-all-dev && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /app/brainflow
+
+COPY brainflow/master.zip /app/brainflow
+
 # Clone and build brainflow
-RUN git clone https://github.com/brainflow-dev/brainflow.git && \
-    cd brainflow && \
+RUN unzip brainflow/master.zip -d brainflow/ && \
+    cd brainflow/brainflow-master && \
     mkdir build && \
     cd build && \
     cmake .. && \
