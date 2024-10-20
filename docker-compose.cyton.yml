@@ -37,6 +37,6 @@ services:
   #  build:
   #    context: .
   #    dockerfile: docker/Dockerfile.inference
-  #  #depends_on:
-  #  #- stream
+  #  depends_on:
+  #  - stream
 
