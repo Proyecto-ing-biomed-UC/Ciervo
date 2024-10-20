@@ -29,7 +29,7 @@
 //    Serial Configuration
 #define SERIAL_BAUD 9600
 
-#define TIMEOUT 1000
+#define TIMEOUT 3000
 
 //#define USE_UART                    //Uncomment to use
 
