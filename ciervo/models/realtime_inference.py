@@ -11,7 +11,7 @@ import struct
 from threading import Thread
 
 
-broker = p.BROKER_HOST
+broker = '127.0.0.1'
 port = 1883
 topic = "data"
 
@@ -85,7 +85,7 @@ class RealTimeInference:
                  acc_idx=[8, 9, 10],
                  serial_send=True,
                  ):
-        self.update_speed = 1/5 # seconds
+        self.update_speed = 1/10 # seconds
         self.window = window  # seconds
         self.angle_speed = 5 # degrees per second
         self.serial_send = serial_send
@@ -141,6 +141,9 @@ class RealTimeInference:
         self.buffer.data = data
 
     def update(self):
+
+
+        angle_list = []
         while True:
             tic = time.time()
             data = self.buffer.data
@@ -156,19 +159,38 @@ class RealTimeInference:
             if self.emg_model is not None:
     
                 prediction = self.emg_model.predict(features)[0]
+                #print(predic)
+
+                #asdf
                 #print("prediccion", prediction)
                 # Update angle
                 if prediction == 1: #activa
-                    self.angle +=  30
+                    self.angle +=  20
                 else: 
-                    self.angle =  90
+                    self.angle -= 20
+
+                angle_list.append(float(self._angle))
+
+                if len(angle_list) > 10:
+                    angle_list = angle_list[-10:]
+                    # Curve fit with cuadratic
+                    print(np.sum(np.gradient(angle_list)))
+                
 
                 # Send angle
                 if self.serial_send:
                     self.serial.send_byte(self.angle)
 
+
+
+                
                 self.client.publish('marker', int(self._angle), qos=0)
-                #print(self.angle)
+
+                #if  self._angle >= 160:
+                    #self.serial.send_byte(175)
+                    #self._angle = 175
+                    #time.sleep(1)
+
 
 
 

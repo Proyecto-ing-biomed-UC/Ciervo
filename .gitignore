@@ -1,12 +1,11 @@
 # ignorar csv en la carpeta data
 data/**/*.csv
 lightning_logs/
-
+brainflow/
 
 **/*.DS_Store
 
 # Byte-compiled / optimized / DLL files
-recordings/*.npy
 __pycache__/
 *.py[cod]
 *$py.class

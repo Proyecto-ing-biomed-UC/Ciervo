@@ -24,7 +24,8 @@ def remove_nan_values(features, labels):
     """Remove values with NaN values"""
     isnan = np.isnan(features).any(axis=1)
 
-    features[isnan] = 0
+    #features[isnan] = 0
+
 
     return features, labels
 
@@ -33,7 +34,7 @@ def remove_nan_values(features, labels):
 
 if __name__ == "__main__":
     # Load data
-    files = ['otro6', 'otro5']
+    files = ['caminata_normal']
 
     data = []
     for file in files:
@@ -44,11 +45,15 @@ if __name__ == "__main__":
     data = np.hstack(data)
 
 
+
     n_points = data.shape[1]
     print(f"Recording time: {n_points/250} s")
 
     df = pd.DataFrame(data.T, columns=p.CH_NAMES)
     df['labels'] = df['MARKERS']
+
+    print(set(df['labels'].tolist()))
+
     df = df[df['labels'] != 0]
     df['labels'] = df['labels'].apply(lambda x: 1 if x == 2 else 0)
 
@@ -58,13 +63,13 @@ if __name__ == "__main__":
 
     # Smooth filter
     kernel_size = 200 
-    df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
-    df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
-    df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
+    #df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
+    #df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
+    #df['labels'] = np.convolve(df['labels'].to_numpy(), np.array([1]*kernel_size) / kernel_size, mode='same')
 
     plt.plot(df['labels'].to_numpy(), label='filter')
 
-    df['labels'] = df['labels'].apply(lambda x: 1 if x > 0.5 else 0)
+    #df['labels'] = df['labels'].apply(lambda x: 1 if x > 0.5 else 0)
 
     plt.plot(df['labels'].to_numpy(), label='final')
     plt.legend()
@@ -75,7 +80,7 @@ if __name__ == "__main__":
                                          columna=['C1', 'C2', 'C3', 'C4'],
                                          window_size=25,
                                          overlap=0, 
-                                         test_size=0.1,
+                                         test_size=0.2,
                                          random_state=42)
     
     print(train_data.shape, train_label.shape, test_data.shape, test_label.shape)
@@ -97,20 +102,20 @@ if __name__ == "__main__":
 
     # Classifier and parameter grid setup
     classifiers = {
-        'RandomForest': RandomForestClassifier(),
-        'SVC': make_pipeline(StandardScaler(), SVC())
+        'RandomForest': RandomForestClassifier()
+       # 'SVC': make_pipeline(StandardScaler(), SVC())
     }
 
     param_grids = {
         'RandomForest': {
-            'n_estimators': [50, 100, 200],
+            'n_estimators': [10, 20, 30 ,40 ,50, 80, 100],
             'max_depth': [None, 10, 20],
             'min_samples_split': [2, 5],
-        },
-        'SVC': {
-            'svc__C': [0.1, 1, 10],
-            'svc__kernel': ['linear', 'rbf'],
         }
+        #'SVC': {
+        #    'svc__C': [0.1, 1, 10],
+        #    'svc__kernel': ['linear', 'rbf'],
+        #}
     }
 
     best_accuracy = 0.0

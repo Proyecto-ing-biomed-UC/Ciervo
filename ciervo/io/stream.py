@@ -161,6 +161,7 @@ class Publish:
 
             # Convert data to desired precision and publish
             data = data.astype(p.PRECISION)
+            #print(data.shape)
             data_bytes = data.tobytes()
 
             
@@ -227,14 +228,15 @@ def main():
         # Configure OpenBCI
         # x (CHANNEL, POWER_DOWN, GAIN_SET, INPUT_TYPE_SET, BIAS_SET, SRB2_SET, SRB1_SET) X
 
-        for i in range(1, 5):
+        for i in range(1, 9):
             ch = create_channel_setting_command(channel=i,
-                                                power_down=0,
+                                                power_down= 0 if i >4 else 1,
                                                 gain_set=6,
                                                 input_type_set=0,
                                                 bias_set=1,
                                                 srb2_set=1,
                                                 srb1_set=0)
+            
 
             board_shim.config_board(ch)
             sleep(0.1)
