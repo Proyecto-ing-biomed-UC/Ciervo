@@ -11,7 +11,7 @@ import struct
 from threading import Thread
 
 
-broker = '127.0.0.1'
+broker = 'nanomq'
 port = 1883
 topic = "data"
 
@@ -27,7 +27,7 @@ class SendAngleSerial:
                                  timeout=1)
         
         self.msg_tx = 0
-        self.msg_rx = 0
+        self.msg_rx = -20
 
         time.sleep(2)
 
@@ -53,10 +53,11 @@ class SendAngleSerial:
 
         self.msg_tx = int_value
 
-        print(f'raw_msg:\t{value}\t,\tmsg_tx:\t{self.msg_tx}\t,\tmsg_rx:\t{self.msg_rx}')
+        #print(f'raw_msg:\t{value}\t,\tmsg_tx:\t{self.msg_tx}\t,\tmsg_rx:\t{self.msg_rx}')
     
     def read_byte(self):
         if self.ser.in_waiting > 0:
+            print("refreshing values")
             received_data = self.ser.readline()
             #received_value = int.from_bytes(received_data, byteorder='big')
             decoded_data = received_data.decode('utf-8').strip()
@@ -174,8 +175,9 @@ class RealTimeInference:
                 if len(angle_list) > 10:
                     angle_list = angle_list[-10:]
                     # Curve fit with cuadratic
-                    print(np.sum(np.gradient(angle_list)))
-                
+                    #print(np.sum(np.gradient(angle_list)))
+
+                #self.angle = 120
 
                 # Send angle
                 if self.serial_send:

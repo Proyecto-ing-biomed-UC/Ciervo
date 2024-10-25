@@ -164,14 +164,15 @@ class Publish:
             #print(data.shape)
             data_bytes = data.tobytes()
 
-            
-            obtain_set = set(data[12, :])
+            #print(data[12, :][:20])
+            paquetes = np.diff(data[12, :])
 
-            if not obtain_set.issubset(target_set):
-                print("Reiniciando")
-                self.board_shim.release_session()
-                self.board_shim.prepare_session()
-                self.board_shim.start_stream()
+            #if np.sum(paquetes) == 0 and len(data[12, :])> 10 :
+            #    print("Reiniciando")
+            #    self.board_shim.release_session()
+                #self.board_shim.prepare_session()
+                #self.board_shim.start_stream()
+                
 
 
 
