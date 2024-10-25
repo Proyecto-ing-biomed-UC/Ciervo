@@ -11,7 +11,7 @@ import struct
 from threading import Thread
 
 
-broker = 'nanomq'
+broker = p.BROKER_HOST
 port = 1883
 topic = "data"
 
@@ -53,7 +53,7 @@ class SendAngleSerial:
 
         self.msg_tx = int_value
 
-        #print(f'raw_msg:\t{value}\t,\tmsg_tx:\t{self.msg_tx}\t,\tmsg_rx:\t{self.msg_rx}')
+        print(f'raw_msg:\t{value}\t,\tmsg_tx:\t{self.msg_tx}\t,\tmsg_rx:\t{self.msg_rx}')
     
     def read_byte(self):
         if self.ser.in_waiting > 0:

@@ -127,6 +127,8 @@ class Publish:
     def update(self):
         target_set = set(list(range(256)))
         start_time = None
+        packaquete_loss_count= 0 
+        prev_packaquete_loss_count = 0
         while True:
             time.sleep(8 / self.sampling_rate)  # Wait for at least 2 samples
             data = self.board_shim.get_board_data(self.num_points)  # np.float64 default
@@ -167,12 +169,21 @@ class Publish:
             #print(data[12, :][:20])
             paquetes = np.diff(data[12, :])
 
-            #if np.sum(paquetes) == 0 and len(data[12, :])> 10 :
-            #    print("Reiniciando")
-            #    self.board_shim.release_session()
-                #self.board_shim.prepare_session()
-                #self.board_shim.start_stream()
-                
+            if np.sum(paquetes) == 0 and len(data[12, :])> 10 :
+                print("Reiniciando")
+                prev_packaquete_loss_count = packaquete_loss_count
+                packaquete_loss_count += 1
+
+                if packaquete_loss_count >= 20:
+                    self.board_shim.release_session()
+                    self.board_shim.prepare_session()
+                    self.board_shim.start_stream()
+
+
+            
+            if prev_packaquete_loss_count == packaquete_loss_count:
+                packaquete_loss_count = 0
+                    
 
 
 

@@ -16,7 +16,7 @@ services:
 
   stream:
     # image: cgvalle/ciervo_stream:latest
-    restart: always
+    #restart: always
     privileged: true
     pull_policy: always
     volumes:
@@ -29,7 +29,7 @@ services:
 
   inference:
    # image: cgvalle/ciervo_inference:latest
-   restart: always
+   #restart: always
    privileged: true   
    pull_policy: always
    volumes:
